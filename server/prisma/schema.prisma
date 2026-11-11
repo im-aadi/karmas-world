@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  LEARNER
+  ADMIN
+}
+
+enum CommunityPostStatus {
+  PENDING
+  APPROVED
+  HIDDEN
+}
+
+enum CommunityReportStatus {
+  OPEN
+  REVIEWED
+  DISMISSED
+}
+
+enum SecurityUpdateType {
+  LEARNING_GUIDE
+  RESEARCH_UPDATE
+  SECURITY_ADVISORY
+}
+
+enum SecurityUpdateStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum AccountTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+  CHANGE_EMAIL
+}
+
+enum SecurityEventType {
+  SIGN_IN
+  PASSWORD_CHANGED
+  PASSWORD_RESET
+  EMAIL_CHANGE_REQUESTED
+  EMAIL_CHANGED
+  MFA_ENABLED
+  MFA_DISABLED
+  RECOVERY_CODES_ROTATED
+  SESSION_REVOKED
+  OTHER_SESSIONS_REVOKED
+}
+
+model User {
+  id           String           @id @default(cuid())
+  displayName  String           @db.VarChar(60)
+  email        String           @unique @db.VarChar(254)
+  passwordHash String           @db.VarChar(255)
+  role         UserRole         @default(LEARNER)
+  leaderboardOptIn Boolean     @default(false)
+  emailVerifiedAt DateTime?
+  mfaEnabledAt DateTime?
+  mfaSecretEncrypted String? @db.VarChar(256)
+  mfaPendingSecretEncrypted String? @db.VarChar(256)
+  mfaPendingExpiresAt DateTime?
+  mfaLastAcceptedStep BigInt?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  progress     LessonProgress[]
+  authoredPosts CommunityPost[] @relation("CommunityPostAuthor")
+  moderatedPosts CommunityPost[] @relation("CommunityPostModerator")
+  submittedReports CommunityReport[] @relation("CommunityReportAuthor")
+  reviewedReports CommunityReport[] @relation("CommunityReportModerator")
+  authoredSecurityUpdates SecurityUpdate[] @relation("SecurityUpdateAuthor")
+  editedSecurityUpdates SecurityUpdate[] @relation("SecurityUpdateEditor")
+  accountTokens AccountToken[]
+  mfaRecoveryCodes MfaRecoveryCode[]
+  securityEvents SecurityEvent[]
+}
+
+model SecurityEvent {
+  id        String            @id @default(cuid())
+  userId    String
+  type      SecurityEventType
+  userAgent String?           @db.VarChar(240)
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AccountToken {
+  id        String             @id @default(cuid())
+  userId    String
+  purpose   AccountTokenPurpose
+  tokenHash String             @unique @db.VarChar(64)
+  targetEmail String?          @db.VarChar(254)
+  expiresAt DateTime
+  createdAt DateTime           @default(now())
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+}
+
+model MfaRecoveryCode {
+  id        String   @id @default(cuid())
+  userId    String
+  codeHash  String   @unique @db.VarChar(64)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  courseId    String   @db.VarChar(40)
+  lessonIndex Int
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId, lessonIndex])
+  @@index([userId, completedAt])
+}
+
+model CommunityPost {
+  id               String              @id @default(cuid())
+  authorId         String
+  body             String              @db.VarChar(800)
+  status           CommunityPostStatus @default(PENDING)
+  createdAt        DateTime            @default(now())
+  moderatedAt      DateTime?
+  moderatorId      String?
+  author           User                @relation("CommunityPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  moderator        User?               @relation("CommunityPostModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
+  reports          CommunityReport[]
+
+  @@index([status, createdAt])
+  @@index([authorId, createdAt])
+}
+
+model CommunityReport {
+  id           String                 @id @default(cuid())
+  postId       String
+  reporterId   String
+  reason       String                 @db.VarChar(40)
+  details      String?                @db.VarChar(300)
+  status       CommunityReportStatus  @default(OPEN)
+  createdAt    DateTime               @default(now())
+  reviewedAt   DateTime?
+  moderatorId  String?
+  post          CommunityPost          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reporter      User                   @relation("CommunityReportAuthor", fields: [reporterId], references: [id], onDelete: Cascade)
+  moderator     User?                  @relation("CommunityReportModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
+
+  @@unique([postId, reporterId])
+  @@index([status, createdAt])
+}
+
+model SecurityUpdate {
+  id              String               @id @default(cuid())
+  source           String               @db.VarChar(20)
+  type             SecurityUpdateType
+  title            String               @db.VarChar(180)
+  sourceUrl        String               @db.VarChar(2048)
+  sourcePublishedAt DateTime
+  summary          String               @db.VarChar(600)
+  takeaway         String               @db.VarChar(360)
+  status           SecurityUpdateStatus @default(DRAFT)
+  verifiedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  authorId         String?
+  editorId         String?
+  author           User?                @relation("SecurityUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  editor           User?                @relation("SecurityUpdateEditor", fields: [editorId], references: [id], onDelete: SetNull)
+
+  @@index([status, sourcePublishedAt])
+}
+
+model Session {
+  sid    String   @id @db.VarChar(255)
+  sess   Json     @db.JsonB
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_user_sessions_expire")
+  @@map("user_sessions")
+}

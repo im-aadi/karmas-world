@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: karma
+          POSTGRES_PASSWORD: localdev-only
+          POSTGRES_DB: karmas_world
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mailpit:
+        image: axllent/mailpit:v1.27
+        ports:
+          - 1025:1025
+          - 8025:8025
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter @karmas-world/api db:generate
+
+      - name: Apply Database Migrations
+        env:
+          DATABASE_URL: postgresql://karma:localdev-only@localhost:5432/karmas_world?schema=public
+        run: pnpm --filter @karmas-world/api db:deploy
+
+      - name: Run Frontend Tests
+        run: pnpm test
+
+      - name: Build Frontend
+        run: pnpm build
+
+      - name: Run Backend Tests
+        env:
+          NODE_ENV: test
+          PORT: 4000
+          WEB_ORIGIN: http://localhost:5173
+          DATABASE_URL: postgresql://karma:localdev-only@localhost:5432/karmas_world?schema=public
+          SESSION_SECRET: test-session-secret-at-least-32-chars-long-abc123
+          SMTP_HOST: localhost
+          SMTP_PORT: 1025
+          SMTP_SECURE: false
+          SMTP_FROM: no-reply@karmas.world
+        run: pnpm --filter @karmas-world/api test
+
+      - name: Build Backend
+        run: pnpm --filter @karmas-world/api build

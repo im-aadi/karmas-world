@@ -1,0 +1,11 @@
+export default [
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/coverage/**',
+      '**/*.tsbuildinfo',
+      '**/pnpm-lock.yaml',
+    ],
+  },
+]

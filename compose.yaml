@@ -1,0 +1,27 @@
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: karma
+      POSTGRES_PASSWORD: localdev-only
+      POSTGRES_DB: karmas_world
+    ports:
+      - "5432:5432"
+    volumes:
+      - karma-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U karma -d karmas_world"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+volumes:
+  karma-postgres:

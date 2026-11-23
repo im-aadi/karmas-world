@@ -12,6 +12,12 @@ enum UserRole {
   ADMIN
 }
 
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 enum CommunityPostStatus {
   PENDING
   APPROVED
@@ -56,30 +62,34 @@ enum SecurityEventType {
 }
 
 model User {
-  id           String           @id @default(cuid())
-  displayName  String           @db.VarChar(60)
-  email        String           @unique @db.VarChar(254)
-  passwordHash String           @db.VarChar(255)
-  role         UserRole         @default(LEARNER)
-  leaderboardOptIn Boolean     @default(false)
-  emailVerifiedAt DateTime?
-  mfaEnabledAt DateTime?
-  mfaSecretEncrypted String? @db.VarChar(256)
-  mfaPendingSecretEncrypted String? @db.VarChar(256)
-  mfaPendingExpiresAt DateTime?
-  mfaLastAcceptedStep BigInt?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  progress     LessonProgress[]
-  authoredPosts CommunityPost[] @relation("CommunityPostAuthor")
-  moderatedPosts CommunityPost[] @relation("CommunityPostModerator")
-  submittedReports CommunityReport[] @relation("CommunityReportAuthor")
-  reviewedReports CommunityReport[] @relation("CommunityReportModerator")
-  authoredSecurityUpdates SecurityUpdate[] @relation("SecurityUpdateAuthor")
-  editedSecurityUpdates SecurityUpdate[] @relation("SecurityUpdateEditor")
-  accountTokens AccountToken[]
-  mfaRecoveryCodes MfaRecoveryCode[]
-  securityEvents SecurityEvent[]
+  id                        String              @id @default(cuid())
+  displayName               String              @db.VarChar(60)
+  email                     String              @unique @db.VarChar(254)
+  passwordHash              String              @db.VarChar(255)
+  role                      UserRole            @default(LEARNER)
+  leaderboardOptIn          Boolean             @default(false)
+  emailVerifiedAt           DateTime?
+  mfaEnabledAt              DateTime?
+  mfaSecretEncrypted        String?             @db.VarChar(256)
+  mfaPendingSecretEncrypted String?             @db.VarChar(256)
+  mfaPendingExpiresAt       DateTime?
+  mfaLastAcceptedStep       BigInt?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime            @updatedAt
+  progress                  LessonProgress[]
+  authoredPosts             CommunityPost[]     @relation("CommunityPostAuthor")
+  moderatedPosts            CommunityPost[]     @relation("CommunityPostModerator")
+  submittedReports          CommunityReport[]   @relation("CommunityReportAuthor")
+  reviewedReports           CommunityReport[]   @relation("CommunityReportModerator")
+  authoredSecurityUpdates   SecurityUpdate[]    @relation("SecurityUpdateAuthor")
+  editedSecurityUpdates     SecurityUpdate[]    @relation("SecurityUpdateEditor")
+  accountTokens             AccountToken[]
+  mfaRecoveryCodes          MfaRecoveryCode[]
+  securityEvents            SecurityEvent[]
+  enrollments               Enrollment[]
+  bookmarks                 Bookmark[]
+  userAchievements          UserAchievement[]
+  streak                    LearningStreak?
 }
 
 model SecurityEvent {
@@ -94,14 +104,14 @@ model SecurityEvent {
 }
 
 model AccountToken {
-  id        String             @id @default(cuid())
-  userId    String
-  purpose   AccountTokenPurpose
-  tokenHash String             @unique @db.VarChar(64)
-  targetEmail String?          @db.VarChar(254)
-  expiresAt DateTime
-  createdAt DateTime           @default(now())
-  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String              @id @default(cuid())
+  userId      String
+  purpose     AccountTokenPurpose
+  tokenHash   String              @unique @db.VarChar(64)
+  targetEmail String?             @db.VarChar(254)
+  expiresAt   DateTime
+  createdAt   DateTime            @default(now())
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, purpose])
   @@index([expiresAt])
@@ -129,57 +139,177 @@ model LessonProgress {
   @@index([userId, completedAt])
 }
 
+model Category {
+  id          String          @id @default(cuid())
+  slug        String          @unique @db.VarChar(60)
+  name        String          @db.VarChar(120)
+  description String          @db.VarChar(600)
+  level       DifficultyLevel @default(BEGINNER)
+  iconName    String          @db.VarChar(60)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  courses     Course[]
+
+  @@index([slug])
+}
+
+model Course {
+  id          String          @id @default(cuid())
+  slug        String          @unique @db.VarChar(80)
+  title       String          @db.VarChar(180)
+  description String          @db.VarChar(1000)
+  level       DifficultyLevel @default(BEGINNER)
+  duration    String          @db.VarChar(40)
+  xpReward    Int             @default(100)
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  modules     Module[]
+  enrollments Enrollment[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model Module {
+  id         String   @id @default(cuid())
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title      String   @db.VarChar(180)
+  orderIndex Int      @default(0)
+  lessons    Lesson[]
+
+  @@index([courseId, orderIndex])
+}
+
+model Lesson {
+  id         String     @id @default(cuid())
+  moduleId   String
+  module     Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title      String     @db.VarChar(180)
+  slug       String     @unique @db.VarChar(120)
+  duration   String     @db.VarChar(40)
+  content    String     @db.Text
+  orderIndex Int        @default(0)
+  xpReward   Int        @default(50)
+  bookmarks  Bookmark[]
+
+  @@index([moduleId, orderIndex])
+  @@index([slug])
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+
+  @@unique([userId, courseId])
+  @@index([userId, enrolledAt])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model Achievement {
+  id               String            @id @default(cuid())
+  slug             String            @unique @db.VarChar(60)
+  title            String            @db.VarChar(120)
+  description      String            @db.VarChar(300)
+  icon             String            @db.VarChar(60)
+  xpValue          Int               @default(100)
+  createdAt        DateTime          @default(now())
+  userAchievements UserAchievement[]
+
+  @@index([slug])
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+  @@index([userId, unlockedAt])
+}
+
+model LearningStreak {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak  Int      @default(0)
+  longestStreak  Int      @default(0)
+  lastActiveDate DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model CommunityPost {
-  id               String              @id @default(cuid())
-  authorId         String
-  body             String              @db.VarChar(800)
-  status           CommunityPostStatus @default(PENDING)
-  createdAt        DateTime            @default(now())
-  moderatedAt      DateTime?
-  moderatorId      String?
-  author           User                @relation("CommunityPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  moderator        User?               @relation("CommunityPostModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
-  reports          CommunityReport[]
+  id          String              @id @default(cuid())
+  authorId    String
+  body        String              @db.VarChar(800)
+  status      CommunityPostStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  moderatedAt DateTime?
+  moderatorId String?
+  author      User                @relation("CommunityPostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  moderator   User?               @relation("CommunityPostModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
+  reports     CommunityReport[]
 
   @@index([status, createdAt])
   @@index([authorId, createdAt])
 }
 
 model CommunityReport {
-  id           String                 @id @default(cuid())
-  postId       String
-  reporterId   String
-  reason       String                 @db.VarChar(40)
-  details      String?                @db.VarChar(300)
-  status       CommunityReportStatus  @default(OPEN)
-  createdAt    DateTime               @default(now())
-  reviewedAt   DateTime?
-  moderatorId  String?
-  post          CommunityPost          @relation(fields: [postId], references: [id], onDelete: Cascade)
-  reporter      User                   @relation("CommunityReportAuthor", fields: [reporterId], references: [id], onDelete: Cascade)
-  moderator     User?                  @relation("CommunityReportModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
+  id          String                @id @default(cuid())
+  postId      String
+  reporterId  String
+  reason      String                @db.VarChar(40)
+  details     String?               @db.VarChar(300)
+  status      CommunityReportStatus @default(OPEN)
+  createdAt   DateTime              @default(now())
+  reviewedAt  DateTime?
+  moderatorId String?
+  post        CommunityPost         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reporter    User                  @relation("CommunityReportAuthor", fields: [reporterId], references: [id], onDelete: Cascade)
+  moderator   User?                 @relation("CommunityReportModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
 
   @@unique([postId, reporterId])
   @@index([status, createdAt])
 }
 
 model SecurityUpdate {
-  id              String               @id @default(cuid())
-  source           String               @db.VarChar(20)
-  type             SecurityUpdateType
-  title            String               @db.VarChar(180)
-  sourceUrl        String               @db.VarChar(2048)
+  id                String               @id @default(cuid())
+  source            String               @db.VarChar(20)
+  type              SecurityUpdateType
+  title             String               @db.VarChar(180)
+  sourceUrl         String               @db.VarChar(2048)
   sourcePublishedAt DateTime
-  summary          String               @db.VarChar(600)
-  takeaway         String               @db.VarChar(360)
-  status           SecurityUpdateStatus @default(DRAFT)
-  verifiedAt       DateTime?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
-  authorId         String?
-  editorId         String?
-  author           User?                @relation("SecurityUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-  editor           User?                @relation("SecurityUpdateEditor", fields: [editorId], references: [id], onDelete: SetNull)
+  summary           String               @db.VarChar(600)
+  takeaway          String               @db.VarChar(360)
+  status            SecurityUpdateStatus @default(DRAFT)
+  verifiedAt        DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  authorId          String?
+  editorId          String?
+  author            User?                @relation("SecurityUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  editor            User?                @relation("SecurityUpdateEditor", fields: [editorId], references: [id], onDelete: SetNull)
 
   @@index([status, sourcePublishedAt])
 }

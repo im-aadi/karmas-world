@@ -10,6 +10,7 @@ import { communityRouter } from './modules/community/router.js'
 import { leaderboardRouter } from './modules/leaderboard/router.js'
 import { adminRouter } from './modules/admin/router.js'
 import { newsRouter } from './modules/news/router.js'
+import { lmsRouter } from './modules/lms/router.js'
 import { createAccountMailer, type AccountMailer } from './modules/auth/mailer.js'
 import type { readConfig } from './config.js'
 
@@ -57,6 +58,7 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   app.use('/api/leaderboard', leaderboardRouter(prisma))
   app.use('/api/news', newsRouter(prisma))
   app.use('/api/admin', adminRouter(prisma))
+  app.use('/api', lmsRouter(prisma))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'API route not found.' }))
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     console.error('API request failed', error instanceof Error ? error.message : 'Unknown error')

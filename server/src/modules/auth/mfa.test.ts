@@ -18,7 +18,8 @@ describe('authenticator helpers', () => {
     const key = 'ab'.repeat(32)
     const encrypted = encryptMfaSecret(generateMfaSecret(), key)
     expect(decryptMfaSecret(encrypted, key)).toMatch(/^[A-Z2-7]+$/)
-    expect(() => decryptMfaSecret(`${encrypted.slice(0, -1)}x`, key)).toThrow()
+    const tampered = encrypted.slice(0, -1) + (encrypted.endsWith('x') ? 'y' : 'x')
+    expect(() => decryptMfaSecret(tampered, key)).toThrow()
   })
 
   it('generates one-time recovery codes and hashes normalized values', () => {

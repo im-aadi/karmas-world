@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, Award, BookOpen, CircleCheck, Compass, Download, Printer, Sparkles } from 'lucide-react'
+import { ArrowRight, Award, BookOpen, CircleCheck, Compass, Download, Flame, Printer, Sparkles, Trophy, Zap } from 'lucide-react'
 import { courses } from '../data/courses'
 import { learningProgressEvent, readLearningProgress, type LearningProgress } from '../data/progress'
 import { LeaderboardPanel } from './LeaderboardPanel'
@@ -52,6 +52,35 @@ export function StudentDashboard({ displayName = 'Karma’s World learner', sign
       <div className="dashboard-grid">
         <div className="progress-summary"><div className="summary-top"><span className="summary-icon"><BookOpen size={17} /></span><span>LOCAL LEARNING PROGRESS</span></div><div className="summary-count">{completedLessons}<span> / {totalLessons} lessons</span></div><div className="dashboard-progress-track"><span style={{ width: `${percentage}%` }} /></div><div className="summary-footer"><span>{percentage}% complete</span><span>{activePaths} {activePaths === 1 ? 'path started' : 'paths started'}</span></div></div>
         <div className="next-step-card"><span className="summary-icon green"><Sparkles size={17} /></span><div><h3>{completedLessons === 0 ? 'Start with the essentials' : completedLessons === totalLessons ? 'You finished every current lesson' : 'Keep your momentum going'}</h3><p>{completedLessons === 0 ? 'Cybersecurity foundations is a welcoming place to begin.' : completedLessons === totalLessons ? 'Your next step is to explore a safe practice simulation or career direction.' : 'Your learning is saved in this browser. Pick up with the next idea when you’re ready.'}</p></div><a href={completedLessons === 0 ? '#academy' : '#games'} aria-label="Go to next learning activity"><ArrowRight size={16} /></a></div>
+      </div>
+      <div className="dashboard-gamification-strip">
+        <div className="gamification-card">
+          <span className="gamification-icon xp"><Zap size={16} /></span>
+          <div>
+            <span className="gamification-label">EXPERIENCE POINTS</span>
+            <strong>{completedLessons * 150} XP</strong>
+          </div>
+        </div>
+        <div className="gamification-card">
+          <span className="gamification-icon level"><Trophy size={16} /></span>
+          <div>
+            <span className="gamification-label">CURRENT RANK</span>
+            <strong>Level {Math.max(1, Math.floor(completedLessons / 2) + 1)} Cadet</strong>
+          </div>
+        </div>
+        <div className="gamification-card">
+          <span className="gamification-icon streak"><Flame size={16} /></span>
+          <div>
+            <span className="gamification-label">LEARNING STREAK</span>
+            <strong>{completedLessons > 0 ? 1 : 0} Day Streak</strong>
+          </div>
+        </div>
+        <div className="gamification-card catalog-shortcut">
+          <div>
+            <span className="gamification-label">EXPAND YOUR SKILLS</span>
+            <a href="#catalog" className="catalog-link-text">Browse 20 Courses in Catalog <ArrowRight size={13} /></a>
+          </div>
+        </div>
       </div>
       <div className="data-export-card"><div><div className="eyebrow"><span className="eyebrow-line" /> YOUR DATA, YOUR COPY</div><p>Download a JSON file with your learning progress and private reflections{signedIn ? ', plus account data stored on the server.' : ' saved in this browser.'}</p>{exportMessage && <span className="data-export-message" role="status">{exportMessage}</span>}</div><button className="data-export-button" onClick={() => void exportData()} disabled={exporting}>{exporting ? 'Preparing…' : 'Download my data'} <Download size={14} /></button></div>
       <LeaderboardPanel signedIn={signedIn} csrfToken={csrfToken} onSignIn={onSignIn} />

@@ -67,3 +67,123 @@
 .sessions-settings{display:grid;gap:12px;margin-top:5px}.sessions-list{display:grid;gap:8px}.sessions-empty{margin:0;color:#929eaa;font-size:10px}.session-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px;background:#0b141b;border:1px solid #26343d;border-radius:4px}.session-item-main{display:grid;gap:5px;min-width:0}.session-item-main>strong{font-size:10px;color:#e5ebea}.session-item-main>span{color:#a0adb5;font-size:9px;line-height:1.5;overflow-wrap:anywhere}.session-item-main>small{color:#788791;font-size:8px;line-height:1.5}.session-current{flex:0 0 auto;color:var(--mint);font:8px var(--mono);letter-spacing:.08em}.session-revoke,.session-revoke-all{display:flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;padding:7px 8px;border:1px solid #634044;border-radius:4px;background:#211417;color:#ffb6b6;font:9px Manrope,system-ui,sans-serif;cursor:pointer}.session-revoke:hover,.session-revoke-all:hover{border-color:#d66c73;color:#ffd1d1}.session-revoke:disabled,.session-revoke-all:disabled{opacity:.5;cursor:wait}.session-revoke-all{width:max-content}
 .security-activity-settings{display:grid;gap:12px;margin-top:5px}.security-activity-list{display:grid;gap:8px}.security-activity-item{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:10px 11px;background:#0b141b;border:1px solid #26343d;border-radius:4px}.security-activity-item>div{display:grid;gap:5px;min-width:0}.security-activity-item strong{color:#e5ebea;font-size:10px}.security-activity-item span{color:#929eaa;font-size:9px;line-height:1.5;overflow-wrap:anywhere}.security-activity-item time{flex:0 0 auto;color:#788791;font-size:8px;line-height:1.5;text-align:right}
 .mfa-settings{display:grid;gap:12px;margin-top:5px}.mfa-description,.mfa-setup-panel p,.mfa-recovery-panel p{margin:0;color:#929eaa;font-size:10px;line-height:1.7}.mfa-status{display:flex;align-items:center;gap:8px;margin:0;color:#c8efad;font-size:10px}.mfa-status .live-dot{flex:0 0 auto}.mfa-action-form{display:grid;gap:11px}.mfa-action-form .button-primary{width:max-content}.mfa-setup-panel,.mfa-recovery-panel{display:grid;gap:10px;padding:13px;background:#0b141b;border:1px solid #34413d;border-radius:4px}.mfa-secret{display:block;overflow-wrap:anywhere;padding:11px;background:#080d16;border:1px solid #27343e;border-radius:3px;color:var(--mint);font:12px var(--mono);letter-spacing:.08em}.mfa-recovery-panel{border-color:#8b7440;background:#18160f}.mfa-recovery-panel>strong{color:#f0d79b;font-size:11px}.mfa-recovery-codes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.mfa-recovery-codes code{padding:7px 8px;background:#0d1115;border:1px solid #3c3a2f;border-radius:3px;color:#f0e7cf;text-align:center;font:10px var(--mono)}.mfa-copy-button,.mfa-secondary-button{display:flex;align-items:center;justify-content:center;gap:7px;width:max-content;padding:8px 10px;border:1px solid #39464d;border-radius:4px;background:#111923;color:#c2cbd0;font:10px Manrope,system-ui,sans-serif;cursor:pointer}.mfa-copy-button:hover,.mfa-secondary-button:hover{border-color:#b8f27e66;color:var(--mint)}.mfa-copy-button:disabled,.mfa-secondary-button:disabled{opacity:.5;cursor:wait}.mfa-secondary-button{border-color:#634044;background:#211417;color:#ffb6b6}.mfa-secondary-button:hover{border-color:#d66c73;color:#ffd1d1}.mfa-settings>.account-error,.mfa-settings>.settings-success{margin:0}
+
+/* ==============================================================================
+   PHASE 2: GAMIFICATION STRIP & COURSE CATALOG STYLES
+   ============================================================================== */
+.dashboard-gamification-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.gamification-card{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#0d151f;border:1px solid #202c37;border-radius:5px}
+.gamification-icon{width:36px;height:36px;border-radius:5px;display:grid;place-items:center;flex-shrink:0}
+.gamification-icon.xp{background:#b8f27e14;color:var(--mint);border:1px solid #b8f27e44}
+.gamification-icon.level{background:#9ed5ff14;color:var(--blue);border:1px solid #9ed5ff44}
+.gamification-icon.streak{background:#ff9f4314;color:#ff9f43;border:1px solid #ff9f4344}
+.gamification-label{display:block;font:8px var(--mono);letter-spacing:.08em;color:#85939e;margin-bottom:3px}
+.gamification-card strong{font-size:14px;color:#f0f4f3;letter-spacing:-.02em}
+.gamification-card.catalog-shortcut{background:#111c26;border-color:#b8f27e33;justify-content:center}
+.catalog-link-text{display:inline-flex;align-items:center;gap:6px;color:var(--mint);font-size:11px;font-weight:700;margin-top:2px}
+.catalog-link-text:hover{color:#cbffa0}
+
+.catalog-section{padding:82px 0 91px;background:#090e17;border-top:1px solid var(--line)}
+.catalog-filters-bar{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap}
+.catalog-search-wrap{position:relative;flex:1;min-width:280px}
+.catalog-search-wrap .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#73828d;pointer-events:none}
+.catalog-search-input{width:100%;height:44px;padding:0 40px 0 42px;background:#101923;border:1px solid #24323c;border-radius:5px;color:#f0f5f4;font:12px/1.6 Manrope,sans-serif;outline:none;transition:border-color .2s}
+.catalog-search-input:focus{border-color:var(--mint);box-shadow:0 0 0 2px #b8f27e1f}
+.search-clear-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:none;color:#80909b;cursor:pointer;padding:4px}
+.search-clear-btn:hover{color:#eef2f0}
+
+.catalog-dropdown-filters{display:flex;gap:10px}
+.filter-select-wrap{position:relative;display:flex;align-items:center}
+.filter-select-wrap .filter-icon{position:absolute;left:12px;color:#7e8d98;pointer-events:none}
+.filter-select{height:44px;padding:0 14px 0 34px;background:#101923;border:1px solid #24323c;border-radius:5px;color:#c9d2d6;font:11px Manrope,sans-serif;cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--mint)}
+.filter-select option{background:#0e151e;color:#eef2f0}
+
+.category-pills-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:18px;scrollbar-width:thin}
+.category-pill-btn{padding:8px 14px;border:1px solid #202c37;background:#0d151f;border-radius:20px;color:#9aa7b0;font:10px Manrope,sans-serif;white-space:nowrap;cursor:pointer;transition:all .2s}
+.category-pill-btn:hover{border-color:#b8f27e66;color:#eef2f0}
+.category-pill-btn.active{background:var(--mint);color:#0c140d;font-weight:700;border-color:var(--mint)}
+
+.catalog-results-header{display:flex;justify-content:space-between;align-items:center;font:10px var(--mono);color:#83919b;margin-bottom:20px}
+.catalog-results-header strong{color:var(--mint)}
+.reset-filters-btn{border:0;background:none;color:var(--mint);font:inherit;cursor:pointer;text-decoration:underline}
+
+.catalog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.catalog-card{min-height:280px;padding:22px;background:#101923;border:1px solid #202c37;border-radius:6px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+.catalog-card:hover{transform:translateY(-3px);border-color:#b8f27e66;box-shadow:0 12px 35px #00000040}
+.catalog-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.course-cat-tag{font:9px var(--mono);letter-spacing:.08em;color:#9eb0bc;background:#16222c;padding:4px 8px;border-radius:3px;border:1px solid #263541}
+
+.difficulty-badge{font:8px var(--mono);letter-spacing:.08em;padding:3px 7px;border-radius:3px;font-weight:700}
+.difficulty-badge.beginner{color:#b8f27e;background:#b8f27e18;border:1px solid #b8f27e44}
+.difficulty-badge.intermediate{color:var(--blue);background:#9ed5ff18;border:1px solid #9ed5ff44}
+.difficulty-badge.advanced{color:#e2a8ff;background:#e2a8ff18;border:1px solid #e2a8ff44}
+
+.catalog-card-title{font-size:16px;line-height:1.35;margin:0 0 10px;color:#f0f5f4}
+.catalog-card-desc{font-size:11px;line-height:1.75;color:#919ea9;margin:0 0 16px;flex:1}
+.catalog-card-meta{display:flex;gap:14px;align-items:center;font:9px var(--mono);color:#7b8a95;padding-top:12px;border-top:1px solid #1a242f;margin-bottom:16px}
+.catalog-card-meta span{display:inline-flex;align-items:center;gap:5px}
+.xp-tag{color:var(--mint);margin-left:auto}
+
+.catalog-card-actions{display:flex;gap:10px;align-items:center}
+.card-details-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;background:#15202a;border:1px solid #25333f;border-radius:4px;color:#d1dae0;font:11px Manrope,sans-serif;font-weight:600;cursor:pointer;transition:all .15s}
+.card-details-btn:hover{background:#1d2b38;color:#eef2f0;border-color:#b8f27e55}
+.card-start-btn{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;background:var(--mint);color:#0a120b;border:0;border-radius:4px;font:11px Manrope,sans-serif;font-weight:700;cursor:pointer;transition:background .2s}
+.card-start-btn:hover{background:#cbffa0}
+
+.catalog-empty-state{text-align:center;padding:56px 20px;border:1px dashed #24323c;border-radius:6px;color:#8a99a4}
+.catalog-empty-state svg{color:var(--mint);margin-bottom:12px}
+.catalog-empty-state h3{font-size:18px;color:#eef2f0;margin:0 0 8px}
+.catalog-empty-state p{font-size:11px;margin:0 0 20px}
+
+/* Course Details Modal */
+.course-modal-backdrop{position:fixed;inset:0;z-index:90;background:#03070bd6;backdrop-filter:blur(8px);display:grid;place-items:center;padding:24px;overflow-y:auto}
+.course-modal-panel{position:relative;width:min(100%,780px);max-height:88vh;background:#0e151e;border:1px solid #2a3844;border-radius:8px;box-shadow:0 30px 100px #000000bd;display:flex;flex-direction:column;overflow:hidden}
+.course-modal-close{position:absolute;top:18px;right:18px;width:32px;height:32px;border:1px solid #2d3c47;border-radius:50%;background:#131c26;color:#9aa7b0;display:grid;place-items:center;cursor:pointer;z-index:2}
+.course-modal-close:hover{color:var(--mint);border-color:var(--mint)}
+.course-modal-header{padding:28px 32px 20px;border-bottom:1px solid #1c2732;background:linear-gradient(180deg,#121b25,#0e151e)}
+.course-modal-tags{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.course-category-pill{font:9px var(--mono);color:var(--mint);background:#b8f27e15;padding:4px 9px;border-radius:4px;border:1px solid #b8f27e44}
+.xp-badge{display:inline-flex;align-items:center;gap:5px;font:9px var(--mono);color:var(--blue);background:#9ed5ff15;padding:4px 9px;border-radius:4px;border:1px solid #9ed5ff44}
+.course-modal-header h2{font-size:24px;line-height:1.25;margin:0 0 10px;color:#f0f5f4;letter-spacing:-.03em}
+.course-modal-desc{font-size:12px;line-height:1.8;color:#9eaab4;margin:0}
+
+.course-modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 32px;background:#0b1118;border-bottom:1px solid #1c2732}
+.course-modal-stats>div{display:grid;gap:3px}
+.course-modal-stats svg{color:var(--mint);margin-bottom:2px}
+.course-modal-stats span{font:8px var(--mono);color:#7e8e98;letter-spacing:.06em}
+.course-modal-stats strong{font-size:12px;color:#eef2f0}
+
+.course-modal-body{padding:24px 32px;overflow-y:auto;display:grid;gap:24px}
+.modal-section h3{font-size:13px;display:flex;align-items:center;gap:8px;color:#d5dfe2;margin:0 0 12px;letter-spacing:-.01em}
+.modal-section h3 svg{color:var(--mint)}
+.learning-objectives-list{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.learning-objectives-list li{display:flex;align-items:flex-start;gap:10px;font-size:11px;line-height:1.7;color:#a8b4bd}
+.obj-check{color:var(--mint);flex-shrink:0;margin-top:4px}
+.prereqs-list{list-style:none;padding:0;margin:0;display:grid;gap:6px;font-size:11px;color:#94a1ab}
+
+.syllabus-modules{display:grid;gap:12px}
+.syllabus-module-card{background:#111923;border:1px solid #202d38;border-radius:5px;padding:14px 16px}
+.module-title-bar{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.module-num{font:8px var(--mono);color:var(--mint);letter-spacing:.08em}
+.module-title-bar h4{font-size:12px;margin:0;color:#e6ecea}
+.module-lessons{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.module-lessons li{display:flex;align-items:center;gap:10px;font-size:11px;color:#9eb0bc}
+.lesson-num{font:9px var(--mono);color:#6b7b86}
+
+.course-modal-footer{padding:18px 32px;border-top:1px solid #1c2732;background:#0b1118;display:flex;justify-content:space-between;align-items:center}
+
+@media(max-width:800px){
+  .dashboard-gamification-strip{grid-template-columns:1fr 1fr}
+  .catalog-grid{grid-template-columns:1fr 1fr}
+  .course-modal-stats{grid-template-columns:1fr}
+}
+
+@media(max-width:620px){
+  .dashboard-gamification-strip{grid-template-columns:1fr}
+  .catalog-grid{grid-template-columns:1fr}
+  .catalog-filters-bar{flex-direction:column;align-items:stretch}
+  .catalog-dropdown-filters{flex-direction:column}
+  .course-modal-panel{max-height:94vh}
+  .course-modal-header,.course-modal-body,.course-modal-footer{padding-inline:18px}
+}

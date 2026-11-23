@@ -21,3 +21,4 @@ describe('Shared Cybersecurity Categories', () => {
     })
   })
 })
+

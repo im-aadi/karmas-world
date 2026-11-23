@@ -9,6 +9,8 @@ import { clearAccountLearningProgress, setProgressAccountId } from './data/progr
 import { clearPrivateReflections } from './data/reflections'
 import { PathCard } from './components/PathCard'
 import { learningPaths } from './data/paths'
+import { CourseCatalog } from './components/CourseCatalog'
+import type { CatalogCourse } from './data/catalog'
 import { LearningAcademy } from './components/LearningAcademy'
 import { CyberGames } from './components/CyberGames'
 import { PracticeLab } from './components/PracticeLab'
@@ -120,6 +122,16 @@ function App() {
     setAccountMode('login')
   }
 
+  function handleStartCatalogCourse(course: CatalogCourse) {
+    if (course.academyCourseId) {
+      setLessonRequest({ courseId: course.academyCourseId, lessonIndex: 0 })
+      document.getElementById('academy')?.scrollIntoView?.({ behavior: 'smooth' })
+    } else {
+      document.getElementById('academy')?.scrollIntoView?.({ behavior: 'smooth' })
+      setAccountNotice(`Enrolled in "${course.title}". Start with foundational lessons below!`)
+    }
+  }
+
   return <div id="home" className="site-shell">
     <div className="announcement"><span className="live-dot" /> YOUR NEXT CHAPTER STARTS HERE <span className="announcement-sep">/</span> 100% FREE, ALWAYS <ArrowUpRight size={13} /></div>
     <Header account={account} onLogin={() => setAccountMode('login')} onRegister={() => setAccountMode('register')} onLogout={() => void handleLogout()} onSettings={() => setAccountSettingsOpen(true)} />
@@ -151,6 +163,7 @@ function App() {
         <div className="path-grid">{learningPaths.map(path => <PathCard key={path.number} path={path} />)}</div>
         <a className="all-paths" href="#academy">Explore the academy <ArrowRight size={16} /></a>
       </div></section>
+      <CourseCatalog onStartCourse={handleStartCatalogCourse} />
       <LearningAcademy accountId={account?.id ?? null} csrfToken={csrfToken} lessonRequest={lessonRequest} />
       <Glossary onOpenLesson={(courseId, lessonIndex) => setLessonRequest({ courseId, lessonIndex })} />
       <CyberGames />

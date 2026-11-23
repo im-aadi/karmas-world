@@ -225,3 +225,4 @@ export interface UserStats {
   streakDays: number;
   completedLessonsCount: number;
 }
+

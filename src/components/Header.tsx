@@ -3,7 +3,7 @@ import { ArrowUpRight, Menu, Shield, X } from 'lucide-react'
 import type { LearnerAccount } from '../data/account'
 
 const links = [
-  ['My progress', '#dashboard'], ['Learn', '#academy'], ['Glossary', '#glossary'], ['Games', '#games'], ['Practice', '#practice'], ['Updates', '#updates'], ['Community', '#community'],
+  ['Courses', '#catalog'], ['My progress', '#dashboard'], ['Learn', '#academy'], ['Glossary', '#glossary'], ['Games', '#games'], ['Practice', '#practice'], ['Updates', '#updates'], ['Community', '#community'],
 ]
 
 type Props = { account: LearnerAccount | null; onLogin: () => void; onRegister: () => void; onLogout: () => void; onSettings: () => void }

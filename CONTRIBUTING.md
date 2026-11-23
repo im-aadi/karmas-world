@@ -102,3 +102,4 @@ We follow standard Conventional Commits:
 2. Commit your changes with meaningful commit messages.
 3. Push to your branch and open a Pull Request.
 4. Describe the changes, tests performed, and any relevant context in the PR description.
+

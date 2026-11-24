@@ -90,6 +90,7 @@ model User {
   bookmarks                 Bookmark[]
   userAchievements          UserAchievement[]
   streak                    LearningStreak?
+  labAttempts               LabAttempt[]
 }
 
 model SecurityEvent {
@@ -322,3 +323,54 @@ model Session {
   @@index([expire], map: "IDX_user_sessions_expire")
   @@map("user_sessions")
 }
+
+model Lab {
+  id           String          @id @default(cuid())
+  slug         String          @unique @db.VarChar(80)
+  title        String          @db.VarChar(180)
+  description  String          @db.VarChar(1000)
+  categorySlug String          @db.VarChar(60)
+  difficulty   DifficultyLevel @default(BEGINNER)
+  duration     String          @db.VarChar(40)
+  xpReward     Int             @default(150)
+  type         String          @db.VarChar(40)
+  instructions String          @db.Text
+  tasks        LabTask[]
+  attempts     LabAttempt[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([categorySlug])
+  @@index([slug])
+}
+
+model LabTask {
+  id          String   @id @default(cuid())
+  labId       String
+  lab         Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+  title       String   @db.VarChar(180)
+  instruction String   @db.Text
+  hint        String   @db.VarChar(500)
+  flagHash    String   @db.VarChar(64)
+  orderIndex  Int      @default(0)
+  points      Int      @default(50)
+
+  @@index([labId, orderIndex])
+}
+
+model LabAttempt {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  labId          String
+  lab            Lab       @relation(fields: [labId], references: [id], onDelete: Cascade)
+  completedTasks Json      @default("[]") @db.JsonB
+  xpAwarded      Int       @default(0)
+  status         String    @default("IN_PROGRESS") @db.VarChar(30)
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  @@unique([userId, labId])
+  @@index([userId, status])
+}
+

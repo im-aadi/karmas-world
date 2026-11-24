@@ -78,8 +78,8 @@ karmas-world/
 | **Phase 2** | **Frontend Development (Landing, Navigation, 20-Domain Catalog, Course Details, UI)** | ✅ Complete |
 | **Phase 3** | **Database & Authentication (Prisma, PostgreSQL, Argon2id, Auth API, TOTP MFA)** | ✅ Complete |
 | **Phase 4** | **Learning Management System (20 Categories, Modules, Lessons, Enrollments, Bookmarks)** | ✅ Complete |
-| **Phase 5** | **Cybersecurity Labs (Isolated Sandboxes, Linux, Net, Web, Crypto)** | 🔄 In Progress |
-| **Phase 6** | **Gamification (XP, Levels, Streaks, Badges, Leaderboards)** | 📋 Planned |
+| **Phase 5** | **Cybersecurity Labs (Isolated Sandboxes, Linux, Net, Web, Crypto)** | ✅ Complete |
+| **Phase 6** | **Gamification (XP, Levels, Streaks, Badges, Leaderboards)** | 🔄 In Progress |
 | **Phase 7** | **Interactive Learning (OSI/TCP-IP Visualizers, Topologies, Monaco)** | 📋 Planned |
 | **Phase 8** | **Quizzes & Assessments (Timed Exams, Auto-Grading, Explanations)** | 📋 Planned |
 | **Phase 9** | **Community & Knowledge Base (Forums, Articles, Moderation)** | 📋 Planned |

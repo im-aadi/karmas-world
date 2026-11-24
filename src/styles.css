@@ -187,3 +187,886 @@
   .course-modal-panel{max-height:94vh}
   .course-modal-header,.course-modal-body,.course-modal-footer{padding-inline:18px}
 }
+
+
+/* ============================================================================
+   PHASE 05: PRACTICAL CYBERSECURITY LABS & WORKSPACE STYLES
+   ============================================================================ */
+.lab-catalog-section {
+  padding: 82px 0 91px;
+  background: linear-gradient(180deg, #090f18, #0a111a);
+  border-top: 1px solid var(--line);
+}
+.lab-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+.lab-card {
+  padding: 22px;
+  background: #101923;
+  border: 1px solid #202c37;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.lab-card:hover {
+  transform: translateY(-3px);
+  border-color: #b8f27e66;
+}
+.lab-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.lab-type-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: #14202d;
+  border: 1px solid #2a3a4c;
+  display: grid;
+  place-items: center;
+}
+.lab-card-title {
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+  color: #f0f4f3;
+}
+.lab-card-description {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #929eaa;
+  margin: 0 0 16px;
+  flex: 1;
+}
+.lab-card-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  padding: 12px 0;
+  border-top: 1px solid #1a2530;
+  border-bottom: 1px solid #1a2530;
+  margin-bottom: 16px;
+}
+.lab-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.lab-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #172421;
+  color: var(--mint);
+  border: 1px solid #b8f27e44;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.lab-launch-btn:hover {
+  background: #b8f27e22;
+  border-color: var(--mint);
+}
+
+/* Lab Workspace Fullscreen Modal Overlay */
+.lab-workspace-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #080d15;
+  display: flex;
+  flex-direction: column;
+}
+.workspace-top-bar {
+  height: 64px;
+  padding: 0 24px;
+  background: #0d1520;
+  border-bottom: 1px solid #1f2b38;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.workspace-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #141f2a;
+  border: 1px solid #283748;
+  color: #a6b5c2;
+  padding: 7px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.workspace-header-btn:hover {
+  color: #f0f4f3;
+  border-color: #3b4e63;
+}
+.workspace-header-btn.close-btn:hover {
+  color: #ff9b9b;
+  border-color: #ff606066;
+}
+
+/* Workspace Split Layout */
+.workspace-body-split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  overflow: hidden;
+}
+.workspace-left-pane {
+  background: #0e1622;
+  border-right: 1px solid #1f2b38;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.left-pane-tabs {
+  display: flex;
+  border-bottom: 1px solid #1f2b38;
+  background: #0b111a;
+}
+.pane-tab {
+  flex: 1;
+  padding: 12px 14px;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #8c9caa;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+.pane-tab.active {
+  color: var(--mint);
+  border-bottom-color: var(--mint);
+  background: #121c27;
+}
+.left-pane-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Task Cards & Flag Submission */
+.tasks-container {
+  display: grid;
+  gap: 16px;
+}
+.task-card {
+  padding: 16px;
+  background: #111a26;
+  border: 1px solid #233140;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+.task-card.task-completed {
+  border-color: #2e593c;
+  background: #0d1b18;
+}
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.task-number-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1a2736;
+  border: 1px solid #2f4155;
+  color: #a4b4c2;
+  display: grid;
+  place-items: center;
+  font: 11px var(--mono);
+}
+.task-number-badge.done {
+  background: #173623;
+  border-color: #3f8050;
+  color: #79e89d;
+}
+.task-points-badge {
+  color: var(--mint);
+  background: #b8f27e14;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #b8f27e33;
+}
+.task-hint-wrapper {
+  margin-top: 10px;
+}
+.hint-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  color: #8b99a6;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+}
+.hint-toggle-btn:hover {
+  color: #d1dde6;
+}
+.hint-box {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: #192317;
+  border: 1px solid #3c5432;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #d3dfd1;
+  line-height: 1.6;
+}
+.flag-form {
+  margin-top: 12px;
+}
+.flag-input-group {
+  display: flex;
+  gap: 8px;
+}
+.flag-input {
+  flex: 1;
+  height: 36px;
+  background: #090e15;
+  border: 1px solid #283748;
+  border-radius: 4px;
+  color: #e6ecef;
+  padding: 0 12px;
+  outline: none;
+}
+.flag-input:focus {
+  border-color: var(--mint);
+}
+.flag-submit-btn {
+  background: #172420;
+  border: 1px solid #b8f27e44;
+  color: var(--mint);
+  padding: 0 14px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.flag-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.task-feedback-banner {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.feedback-success {
+  background: #12291d;
+  border: 1px solid #265f3a;
+  color: #7ce8a1;
+}
+.feedback-error {
+  background: #2b1315;
+  border: 1px solid #63282b;
+  color: #ff9b9b;
+}
+
+/* Right Pane: Interactive Simulators Area */
+.workspace-right-pane {
+  background: #080d14;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. Terminal Simulator */
+.terminal-container {
+  flex: 1;
+  min-height: 480px;
+  background: #070c12;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+}
+.terminal-header {
+  height: 38px;
+  padding: 0 14px;
+  background: #0e1722;
+  border-bottom: 1px solid #1e2b38;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot-red { background: #ef4444; }
+.dot-yellow { background: #eab308; }
+.dot-green { background: #22c55e; }
+.terminal-title {
+  color: #92a4b4;
+  font-size: 11px;
+}
+.terminal-action-btn {
+  background: transparent;
+  border: 0;
+  color: #7b8d9c;
+  cursor: pointer;
+}
+.terminal-action-btn:hover { color: #f0f4f3; }
+.terminal-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.terminal-text-line {
+  color: #a8cf92;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.terminal-prompt-form {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #0a111a;
+  border-top: 1px solid #1e2b38;
+}
+.terminal-prompt-label {
+  color: #64b5f6;
+  font-size: 12px;
+  margin-right: 8px;
+}
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: #e6ecef;
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+}
+.terminal-submit-btn {
+  background: transparent;
+  border: 0;
+  color: var(--mint);
+  cursor: pointer;
+}
+.terminal-footer {
+  padding: 6px 14px;
+  background: #080d14;
+  border-top: 1px solid #16202a;
+  color: #6b7c8a;
+  font-size: 10px;
+}
+
+/* 2. Packet Inspector Simulator */
+.packet-inspector-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+.packet-filter-bar {
+  padding: 10px 14px;
+  background: #0e1722;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.packet-table-wrapper {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  background: #0b111a;
+}
+.packet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.packet-table th {
+  position: sticky;
+  top: 0;
+  background: #111a26;
+  padding: 8px 10px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #8c9caa;
+  border-bottom: 1px solid #233140;
+}
+.packet-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #18232e;
+}
+.packet-table tr.selected-row {
+  background: #172638;
+}
+.packet-details-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  flex: 1;
+}
+.packet-dissection-pane, .packet-payload-pane {
+  background: #0d1520;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pane-header {
+  padding: 10px 14px;
+  background: #121c28;
+  border-bottom: 1px solid #1e2b38;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d1dde6;
+}
+.pane-content {
+  padding: 14px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 3. SQL Injection Sandbox */
+.sqli-sandbox-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sqli-mode-tabs {
+  display: flex;
+  gap: 10px;
+}
+.mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: #101924;
+  border: 1px solid #233140;
+  border-radius: 6px;
+  color: #92a4b4;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mode-tab.active {
+  background: #182535;
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+.sql-query-visualizer {
+  padding: 14px;
+  background: #0a0f16;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+}
+.visualizer-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: #8c9caa;
+  margin-bottom: 8px;
+}
+.visualizer-code {
+  padding: 10px;
+  background: #05080c;
+  border: 1px solid #19232f;
+  border-radius: 4px;
+  color: #fbbf24;
+  font-family: var(--mono);
+  font-size: 12px;
+  word-break: break-all;
+}
+.sqli-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.search-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #718292;
+}
+.sqli-input {
+  flex: 1;
+  height: 38px;
+  padding: 0 12px 0 36px;
+  background: #0c141e;
+  border: 1px solid #233140;
+  border-radius: 4px;
+  color: #e6ecef;
+  outline: none;
+}
+.sqli-input:focus {
+  border-color: #3b82f6;
+}
+.sqli-btn {
+  padding: 0 18px;
+  height: 38px;
+  background: #1e3a5f;
+  border: 1px solid #2563eb;
+  color: #93c5fd;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.quick-payloads {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.payload-pill {
+  padding: 4px 10px;
+  background: #131d2a;
+  border: 1px solid #283749;
+  border-radius: 4px;
+  color: #93c5fd;
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.payload-pill.reset {
+  color: #94a3b8;
+}
+.payload-pill:hover {
+  background: #1b2a3c;
+  border-color: #3b82f6;
+}
+.sqli-results-table {
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  background: #0d1520;
+  overflow: hidden;
+}
+.results-header {
+  padding: 10px 14px;
+  background: #121c28;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+.sqli-results-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.sqli-results-table th, .sqli-results-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #1c2734;
+  text-align: left;
+}
+.sqli-educational-footer {
+  padding: 14px;
+  background: #0b1a14;
+  border: 1px solid #1b4d32;
+  border-radius: 6px;
+}
+
+/* 4. Crypto Workbench */
+.crypto-workbench-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.crypto-nav-tabs {
+  display: flex;
+  gap: 10px;
+}
+.crypto-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: #101924;
+  border: 1px solid #233140;
+  border-radius: 6px;
+  color: #92a4b4;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.crypto-tab.active {
+  background: #1a172e;
+  border-color: #a855f7;
+  color: #d8b4fe;
+}
+.crypto-card {
+  padding: 20px;
+  background: #0d1520;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+}
+.crypto-input {
+  height: 38px;
+  padding: 0 12px;
+  background: #090e15;
+  border: 1px solid #233140;
+  border-radius: 4px;
+  color: #e6ecef;
+  outline: none;
+}
+.crypto-input:focus {
+  border-color: #a855f7;
+}
+.crypto-btn {
+  padding: 0 16px;
+  height: 38px;
+  background: #2e1a47;
+  border: 1px solid #9333ea;
+  color: #e9d5ff;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 5. Forensics Log Simulator */
+.forensics-log-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+.forensics-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+.forensics-input {
+  width: 320px;
+  height: 36px;
+  padding: 0 12px;
+  background: #0c141e;
+  border: 1px solid #233140;
+  border-radius: 4px;
+  color: #e6ecef;
+  font-size: 12px;
+  outline: none;
+}
+.forensics-input:focus {
+  border-color: #06b6d4;
+}
+.level-filters {
+  display: flex;
+  gap: 6px;
+}
+.lvl-btn {
+  padding: 6px 12px;
+  background: #121c28;
+  border: 1px solid #223244;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #92a4b4;
+  cursor: pointer;
+}
+.lvl-btn.active {
+  background: #082f49;
+  border-color: #0284c7;
+  color: #7dd3fc;
+}
+.forensics-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  flex: 1;
+}
+.log-table-wrapper {
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  background: #0c141e;
+  overflow-y: auto;
+  max-height: 480px;
+}
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.log-table th {
+  position: sticky;
+  top: 0;
+  background: #111a26;
+  padding: 8px 10px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #8c9caa;
+  border-bottom: 1px solid #233140;
+}
+.log-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #18232e;
+}
+.log-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.log-row:hover { background: #152230; }
+.log-row.selected { background: #18283a; }
+.log-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+.badge-info { background: #0c2838; color: #38bdf8; }
+.badge-warn { background: #3b280c; color: #fbbf24; }
+.badge-alert { background: #3b0c0c; color: #f87171; }
+.log-inspector {
+  background: #0d1520;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.inspector-header {
+  padding: 10px 14px;
+  background: #121c28;
+  border-bottom: 1px solid #1e2b38;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+.inspector-body {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* 6. OSINT Recon Simulator */
+.osint-recon-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.osint-target-bar {
+  padding: 12px 16px;
+  background: #0e1722;
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.osint-input {
+  flex: 1;
+  max-width: 320px;
+  height: 32px;
+  padding: 0 10px;
+  background: #080d15;
+  border: 1px solid #233140;
+  border-radius: 4px;
+  color: #e6ecef;
+  outline: none;
+}
+.osint-tabs {
+  display: flex;
+  gap: 10px;
+}
+.osint-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #101924;
+  border: 1px solid #233140;
+  border-radius: 6px;
+  color: #92a4b4;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.osint-tab.active {
+  background: #0d2838;
+  border-color: #0284c7;
+  color: #38bdf8;
+}
+.osint-table-wrapper {
+  border: 1px solid #1e2b38;
+  border-radius: 6px;
+  background: #0c141e;
+  overflow: hidden;
+}
+.osint-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.osint-table th, .osint-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #1c2734;
+  text-align: left;
+}
+
+/* Responsive Overrides for Workspace */
+@media (max-width: 960px) {
+  .workspace-body-split {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .workspace-left-pane {
+    max-height: 320px;
+    border-right: 0;
+    border-bottom: 1px solid #1f2b38;
+  }
+  .lab-catalog-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .lab-catalog-grid {
+    grid-template-columns: 1fr;
+  }
+  .packet-details-grid, .forensics-layout {
+    grid-template-columns: 1fr;
+  }
+}

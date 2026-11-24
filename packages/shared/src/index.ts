@@ -226,3 +226,50 @@ export interface UserStats {
   completedLessonsCount: number;
 }
 
+// Practical Lab Interfaces
+export type LabType =
+  | 'linux-cli'
+  | 'packet-analysis'
+  | 'sqli-sandbox'
+  | 'cryptography'
+  | 'digital-forensics'
+  | 'osint-recon';
+
+export interface LabTask {
+  id: string;
+  title: string;
+  instruction: string;
+  hint: string;
+  points: number;
+  flagFormat?: string;
+}
+
+export interface Lab {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  category: CybersecurityCategory;
+  difficulty: DifficultyLevel;
+  duration: string;
+  xpReward: number;
+  type: LabType;
+  objectives: string[];
+  prerequisites: string[];
+  instructions: string;
+  tasks: LabTask[];
+}
+
+export type LabAttemptStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
+
+export interface LabAttempt {
+  id: string;
+  userId: string;
+  labId: string;
+  completedTasks: string[];
+  xpAwarded: number;
+  status: LabAttemptStatus;
+  startedAt: string;
+  completedAt?: string | null;
+}
+

@@ -18,7 +18,9 @@ describe('authenticator helpers', () => {
     const key = 'ab'.repeat(32)
     const encrypted = encryptMfaSecret(generateMfaSecret(), key)
     expect(decryptMfaSecret(encrypted, key)).toMatch(/^[A-Z2-7]+$/)
-    const tampered = encrypted.slice(0, -1) + (encrypted.endsWith('x') ? 'y' : 'x')
+    const parts = encrypted.split('.')
+    parts[2] = (parts[2].startsWith('A') ? 'B' : 'A') + parts[2].slice(1)
+    const tampered = parts.join('.')
     expect(() => decryptMfaSecret(tampered, key)).toThrow()
   })
 

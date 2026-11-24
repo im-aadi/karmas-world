@@ -11,6 +11,7 @@ import { PathCard } from './components/PathCard'
 import { learningPaths } from './data/paths'
 import { CourseCatalog } from './components/CourseCatalog'
 import type { CatalogCourse } from './data/catalog'
+import { LabCatalog } from './components/labs/LabCatalog'
 import { LearningAcademy } from './components/LearningAcademy'
 import { CyberGames } from './components/CyberGames'
 import { PracticeLab } from './components/PracticeLab'
@@ -164,6 +165,7 @@ function App() {
         <a className="all-paths" href="#academy">Explore the academy <ArrowRight size={16} /></a>
       </div></section>
       <CourseCatalog onStartCourse={handleStartCatalogCourse} />
+      <LabCatalog csrfToken={csrfToken} />
       <LearningAcademy accountId={account?.id ?? null} csrfToken={csrfToken} lessonRequest={lessonRequest} />
       <Glossary onOpenLesson={(courseId, lessonIndex) => setLessonRequest({ courseId, lessonIndex })} />
       <CyberGames />

@@ -85,7 +85,7 @@ karmas-world/
 | **Phase 9** | **Community & Knowledge Base (Forums, Articles, Moderation)** | ✅ Complete |
 | **Phase 10** | **Admin Dashboard (User/Course Management, Analytics, Moderation)** | ✅ Complete |
 | **Phase 11** | **Testing & Security Hardening (OWASP Top 10, CSP, HSTS, Sanitization, Audits)** | ✅ Complete |
-| **Phase 12** | **Production Deployment & Public Launch** | 🔄 Next Up |
+| **Phase 12** | **Production Deployment & Public Launch (Docker, Nginx, CI/CD, Observability)** | ✅ Complete |
 
 ---
 
@@ -165,7 +165,111 @@ pnpm build:all
 
 ---
 
-## 7. Security & Safe Lab Principles
+## 7. Production Deployment & Public Launch Architecture (Phase 12)
+
+### 7.1 Multi-Container Topology
+
+```mermaid
+flowchart TD
+    subgraph Public Internet
+        Learner["Learners & Security Researchers (HTTPS:443 / HTTP:80)"]
+    end
+
+    subgraph Docker Network [karma-network (Bridge)]
+        subgraph Web Tier [Nginx 1.27 Alpine]
+            Nginx["Nginx Reverse Proxy & Static Host"]
+            SPA["Static SPA Bundle (/usr/share/nginx/html)"]
+            Compression["Gzip / Brotli Compression & 1-Year Cache"]
+        end
+
+        subgraph Application Tier [Node.js 22 Alpine API]
+            API["Express 5 REST API (:4000)"]
+            SecMiddle["Helmet (CSP, HSTS, nosniff, DENY)"]
+            RateLimit["Global & Endpoint Rate Limiters"]
+            CSRF["CSRF & Origin Guard"]
+            Argon2["Argon2id & AES-256-GCM Crypto"]
+        end
+
+        subgraph Database Tier [PostgreSQL 17 Alpine]
+            Postgres[("PostgreSQL Database (:5432)")]
+            Volume[("Persistent Storage: karma_postgres_prod")]
+        end
+
+        subgraph External Services
+            SMTP["Remote SMTP Mail Service (SendGrid / Mailgun)"]
+        end
+    end
+
+    Learner -->|HTTP / HTTPS| Nginx
+    Nginx -->|Static Assets| SPA
+    Nginx -->|/api/* Reverse Proxy| API
+    API --> SecMiddle --> RateLimit --> CSRF --> Argon2
+    API -->|Prisma Parameterized Queries| Postgres
+    Postgres --> Volume
+    API -->|Account Verification & Alerts| SMTP
+```
+
+### 7.2 Production Quickstart with Docker Compose
+
+1. **Configure Production Environment Secrets:**
+   ```powershell
+   Copy-Item .env.production.example .env.production
+   # Edit .env.production with strong cryptographically random keys
+   ```
+
+2. **Build and Launch Containerized Services:**
+   ```powershell
+   docker compose -f docker-compose.prod.yml up -d --build
+   ```
+
+3. **Apply Database Migrations:**
+   ```powershell
+   docker compose -f docker-compose.prod.yml exec api pnpm --filter @karmas-world/api db:deploy
+   ```
+
+4. **Verify Container Health Status:**
+   ```powershell
+   docker compose -f docker-compose.prod.yml ps
+   # Test API Health Endpoint
+   Invoke-RestMethod -Uri http://localhost/api/health
+   ```
+
+### 7.3 Zero-Downtime Rolling Update SOP
+
+To deploy application updates without service downtime:
+
+```powershell
+# Pull latest code
+git pull origin main
+
+# Rebuild images in background
+docker compose -f docker-compose.prod.yml build
+
+# Apply any new database migrations
+docker compose -f docker-compose.prod.yml exec api pnpm --filter @karmas-world/api db:deploy
+
+# Recreate API container smoothly
+docker compose -f docker-compose.prod.yml up -d --no-deps --build api
+
+# Recreate Frontend Nginx container smoothly
+docker compose -f docker-compose.prod.yml up -d --no-deps --build web
+```
+
+### 7.4 Disaster Recovery & Backup SOP
+
+1. **Automated Database Backup:**
+   ```powershell
+   docker compose -f docker-compose.prod.yml exec -t database pg_dump -U karma karmas_world > "backup_$(Get-Date -Format 'yyyyMMdd_HHmmss').sql"
+   ```
+
+2. **Database Restore:**
+   ```powershell
+   Get-Content backup_20261126_010000.sql | docker compose -f docker-compose.prod.yml exec -T database psql -U karma karmas_world
+   ```
+
+---
+
+## 8. Security & Safe Lab Principles
 
 Because Karma's World is a cybersecurity education platform, we enforce defense-in-depth:
 
@@ -176,7 +280,7 @@ Because Karma's World is a cybersecurity education platform, we enforce defense-
 
 ---
 
-## 8. License
+## 9. License
 
 This project is licensed under the [MIT License](LICENSE).  
 Copyright (c) 2026 Aditya Kashyap.

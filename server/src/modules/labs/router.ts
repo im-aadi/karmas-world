@@ -3,6 +3,7 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import type { PrismaClient, DifficultyLevel } from '@prisma/client'
 import { labQuerySchema, labSlugSchema, verifyFlagSchema } from './validation.js'
 import { csrfGuard } from '../auth/router.js'
+import { awardXp, unlockAchievement } from '../gamification/router.js'
 
 function requireUser(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) return res.status(401).json({ error: 'Authentication required for this action.' })
@@ -320,6 +321,27 @@ export function labsRouter(prisma: PrismaClient) {
           completedAt: isAllCompleted ? new Date() : undefined,
         },
       })
+
+      // Award XP transaction & increment user's totalXp
+      await awardXp(
+        prisma,
+        userId,
+        pointsEarned,
+        'LAB_COMPLETED',
+        `Completed task "${task.title}" in ${lab.title}`
+      ).catch(() => {})
+
+      // Unlock achievements
+      await unlockAchievement(prisma, userId, 'flag-hunter').catch(() => {})
+      if (isAllCompleted) {
+        if (lab.slug === 'linux-cli-mastery') {
+          await unlockAchievement(prisma, userId, 'terminal-ninja').catch(() => {})
+        } else if (lab.slug === 'web-sqli-portal') {
+          await unlockAchievement(prisma, userId, 'bug-bounty-hunter').catch(() => {})
+        } else if (lab.slug === 'incident-response-log-forensics') {
+          await unlockAchievement(prisma, userId, 'soc-analyst').catch(() => {})
+        }
+      }
 
       // Update learning streak if exists
       await prisma.learningStreak

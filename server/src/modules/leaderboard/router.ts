@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
 import { type PrismaClient } from '@prisma/client'
+import { calculateUserLevel } from '../gamification/ranks.js'
 import { csrfGuard } from '../auth/router.js'
 import { leaderboardPreferenceSchema } from './validation.js'
 
@@ -16,8 +17,8 @@ export function leaderboardRouter(prisma: PrismaClient) {
       const [users, currentUser] = await Promise.all([
         prisma.user.findMany({
           where: { leaderboardOptIn: true },
-          select: { id: true, displayName: true, _count: { select: { progress: true } } },
-          orderBy: [{ progress: { _count: 'desc' } }, { displayName: 'asc' }],
+          select: { id: true, displayName: true, totalXp: true, _count: { select: { progress: true } } },
+          orderBy: [{ totalXp: 'desc' }, { progress: { _count: 'desc' } }, { displayName: 'asc' }],
           take: 50,
         }),
         req.session.userId
@@ -26,7 +27,18 @@ export function leaderboardRouter(prisma: PrismaClient) {
       ])
       res.setHeader('Cache-Control', 'no-store')
       res.json({
-        entries: users.map((user, index) => ({ rank: index + 1, displayName: user.displayName, lessonsCompleted: user._count.progress, isYou: user.id === req.session.userId })),
+        entries: users.map((user, index) => {
+          const rankInfo = calculateUserLevel(user.totalXp)
+          return {
+            rank: index + 1,
+            displayName: user.displayName,
+            lessonsCompleted: user._count.progress,
+            totalXp: user.totalXp,
+            level: rankInfo.level,
+            rankTitle: rankInfo.rankTitle,
+            isYou: user.id === req.session.userId,
+          }
+        }),
         optedIn: currentUser?.leaderboardOptIn ?? false,
       })
     } catch (error) { next(error) }

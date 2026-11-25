@@ -72,6 +72,41 @@ async function main() {
       icon: 'Globe',
       xpValue: 400,
     },
+    {
+      slug: 'flag-hunter',
+      title: 'Flag Hunter',
+      description: 'Captured your first practical lab flag',
+      icon: 'Flag',
+      xpValue: 150,
+    },
+    {
+      slug: 'terminal-ninja',
+      title: 'Terminal Ninja',
+      description: 'Conquered the Linux CLI mastery lab',
+      icon: 'Terminal',
+      xpValue: 250,
+    },
+    {
+      slug: 'sentinel-rank',
+      title: 'Sentinel Rank',
+      description: 'Attained Sentinel Level 4 rank',
+      icon: 'Zap',
+      xpValue: 500,
+    },
+    {
+      slug: 'bug-bounty-hunter',
+      title: 'Injection Sentry',
+      description: 'Exploited and understood SQL injection vulnerabilities',
+      icon: 'Database',
+      xpValue: 350,
+    },
+    {
+      slug: 'soc-analyst',
+      title: 'Incident Responder',
+      description: 'Investigated an enterprise incident and found the web shell',
+      icon: 'HardDrive',
+      xpValue: 400,
+    },
   ]
 
   for (const ach of achievements) {
@@ -380,6 +415,77 @@ async function main() {
     }
   }
   console.log(`✓ Seeded ${seedLabs.length} practical cybersecurity labs and tasks`)
+
+  // 4. Seed Active Weekly Challenges
+  const weeklyChallenges = [
+    {
+      slug: 'weekly-recon-master',
+      title: 'Reconnaissance Specialist',
+      description: 'Perform passive OSINT reconnaissance and discover hidden infrastructure records.',
+      category: 'osint',
+      targetCount: 1,
+      type: 'COMPLETE_LABS',
+      xpReward: 250,
+      badgeIcon: 'Globe',
+      startsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    },
+    {
+      slug: 'weekly-packet-hunter',
+      title: 'Packet Interceptor',
+      description: 'Inspect captured network traffic streams and recover unencrypted credentials.',
+      category: 'network-security',
+      targetCount: 1,
+      type: 'COMPLETE_LABS',
+      xpReward: 300,
+      badgeIcon: 'Radio',
+      startsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    },
+    {
+      slug: 'weekly-consistent-defender',
+      title: 'Iron Streak',
+      description: 'Maintain an active daily learning streak of at least 3 days.',
+      category: 'general',
+      targetCount: 3,
+      type: 'STREAK_DAYS',
+      xpReward: 250,
+      badgeIcon: 'Flame',
+      startsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    },
+    {
+      slug: 'weekly-knowledge-voyager',
+      title: 'Knowledge Voyager',
+      description: 'Complete at least 3 lessons across any cybersecurity learning path.',
+      category: 'general',
+      targetCount: 3,
+      type: 'COMPLETE_LESSONS',
+      xpReward: 200,
+      badgeIcon: 'BookOpen',
+      startsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    },
+  ]
+
+  for (const wc of weeklyChallenges) {
+    await prisma.weeklyChallenge.upsert({
+      where: { slug: wc.slug },
+      update: {
+        title: wc.title,
+        description: wc.description,
+        category: wc.category,
+        targetCount: wc.targetCount,
+        type: wc.type,
+        xpReward: wc.xpReward,
+        badgeIcon: wc.badgeIcon,
+        startsAt: wc.startsAt,
+        expiresAt: wc.expiresAt,
+      },
+      create: wc,
+    })
+  }
+  console.log(`✓ Seeded ${weeklyChallenges.length} active weekly challenges`)
 
   console.log('Seeding completed successfully.')
 }

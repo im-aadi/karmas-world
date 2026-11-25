@@ -2,6 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import type { PrismaClient, DifficultyLevel } from '@prisma/client'
 import { courseQuerySchema, courseSlugSchema, categorySlugSchema, idParamSchema } from './validation.js'
 import { csrfGuard } from '../auth/router.js'
+import { awardXp, unlockAchievement } from '../gamification/router.js'
 
 function requireUser(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) return res.status(401).json({ error: 'Authentication required for this action.' })
@@ -378,6 +379,18 @@ export function lmsRouter(prisma: PrismaClient) {
 
         return { progress, courseCompleted, xpEarned: lesson.xpReward }
       })
+
+      // Award XP transaction & increment user's totalXp
+      await awardXp(
+        prisma,
+        userId,
+        lesson.xpReward,
+        'LESSON_COMPLETED',
+        `Completed lesson: ${lesson.title}`
+      ).catch(() => {})
+
+      // Unlock first-step achievement
+      await unlockAchievement(prisma, userId, 'first-step').catch(() => {})
 
       res.status(200).json({
         success: true,

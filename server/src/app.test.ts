@@ -85,7 +85,9 @@ describe('API boundary defaults', () => {
     const app = createApp({ user: { findMany } } as unknown as PrismaClient, config)
     const response = await request(app).get('/api/leaderboard').expect(200)
     expect(findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { leaderboardOptIn: true }, take: 50 }))
-    expect(response.body.entries).toEqual([{ rank: 1, displayName: 'Learner One', lessonsCompleted: 4, isYou: false }])
+    expect(response.body.entries).toEqual([
+      { rank: 1, displayName: 'Learner One', lessonsCompleted: 4, isYou: false, level: 1, rankTitle: 'Cadet' },
+    ])
     expect(response.body.entries[0].email).toBeUndefined()
   })
 

@@ -95,6 +95,10 @@ model User {
   xpTransactions            XPTransaction[]
   weeklyClaims              UserWeeklyChallengeClaim[]
   quizAttempts              QuizAttempt[]
+  forumThreads              ForumThread[]               @relation("ForumThreadAuthor")
+  forumReplies              ForumReply[]                @relation("ForumReplyAuthor")
+  forumVotes                ForumVote[]                 @relation("ForumVoteUser")
+  knowledgeArticles         KnowledgeArticle[]          @relation("KnowledgeArticleAuthor")
 }
 
 model SecurityEvent {
@@ -489,4 +493,100 @@ model QuizAttempt {
 
   @@index([userId, quizId])
   @@index([userId, completedAt])
+}
+
+model ForumCategory {
+  id          String        @id @default(cuid())
+  slug        String        @unique @db.VarChar(60)
+  name        String        @db.VarChar(120)
+  description String        @db.VarChar(500)
+  iconName    String        @db.VarChar(60)
+  orderIndex  Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  threads     ForumThread[]
+
+  @@index([orderIndex])
+}
+
+model ForumThread {
+  id           String              @id @default(cuid())
+  slug         String              @unique @db.VarChar(120)
+  title        String              @db.VarChar(200)
+  content      String              @db.Text
+  categorySlug String              @db.VarChar(60)
+  category     ForumCategory       @relation(fields: [categorySlug], references: [slug], onDelete: Cascade)
+  authorId     String
+  author       User                @relation("ForumThreadAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  isPinned     Boolean             @default(false)
+  isLocked     Boolean             @default(false)
+  viewsCount   Int                 @default(0)
+  upvotesCount Int                 @default(0)
+  status       CommunityPostStatus @default(APPROVED)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  replies      ForumReply[]
+  votes        ForumVote[]
+
+  @@index([categorySlug, createdAt])
+  @@index([authorId])
+  @@index([status, createdAt])
+}
+
+model ForumReply {
+  id               String      @id @default(cuid())
+  threadId         String
+  thread           ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId         String
+  author           User        @relation("ForumReplyAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  content          String      @db.Text
+  upvotesCount     Int         @default(0)
+  isAcceptedAnswer Boolean     @default(false)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  votes            ForumVote[]
+
+  @@index([threadId, createdAt])
+  @@index([authorId])
+}
+
+model ForumVote {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation("ForumVoteUser", fields: [userId], references: [id], onDelete: Cascade)
+  threadId  String?
+  thread    ForumThread? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  replyId   String?
+  reply     ForumReply?  @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  direction Int          @default(1)
+  createdAt DateTime     @default(now())
+
+  @@unique([userId, threadId])
+  @@unique([userId, replyId])
+  @@index([threadId])
+  @@index([replyId])
+}
+
+model KnowledgeArticle {
+  id                String          @id @default(cuid())
+  slug              String          @unique @db.VarChar(120)
+  title             String          @db.VarChar(200)
+  summary           String          @db.VarChar(600)
+  content           String          @db.Text
+  categorySlug      String          @db.VarChar(60)
+  tags              String          @db.VarChar(240)
+  difficulty        DifficultyLevel @default(BEGINNER)
+  readTimeMinutes   Int             @default(5)
+  authorId          String?
+  author            User?           @relation("KnowledgeArticleAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  viewsCount        Int             @default(0)
+  helpfulVotesCount Int             @default(0)
+  isFeatured        Boolean         @default(false)
+  publishedAt       DateTime        @default(now())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([categorySlug, publishedAt])
+  @@index([isFeatured])
+  @@index([slug])
 }

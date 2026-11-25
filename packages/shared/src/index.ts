@@ -496,3 +496,85 @@ export interface QuizAttemptRecord {
   xpAwarded: number;
   completedAt: string;
 }
+
+// Phase 9: Community Forums & Knowledge Base Interfaces
+export interface ForumCategoryItem {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  iconName: string;
+  orderIndex: number;
+  threadsCount: number;
+}
+
+export interface ForumThreadItem {
+  id: string;
+  slug: string;
+  title: string;
+  preview: string;
+  categorySlug: string;
+  categoryName?: string;
+  authorName: string;
+  authorRank?: string;
+  upvotesCount: number;
+  repliesCount: number;
+  viewsCount: number;
+  isPinned: boolean;
+  isLocked: boolean;
+  status: 'PENDING' | 'APPROVED' | 'HIDDEN';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ForumReplyItem {
+  id: string;
+  threadId: string;
+  authorName: string;
+  authorRank?: string;
+  content: string;
+  upvotesCount: number;
+  isAcceptedAnswer: boolean;
+  createdAt: string;
+  isOwn?: boolean;
+  hasVoted?: boolean;
+}
+
+export interface ForumThreadDetail extends ForumThreadItem {
+  content: string;
+  replies: ForumReplyItem[];
+  isOwn?: boolean;
+  hasVoted?: boolean;
+}
+
+export interface CreateThreadPayload {
+  title: string;
+  content: string;
+  categorySlug: string;
+}
+
+export interface CreateReplyPayload {
+  content: string;
+}
+
+export interface KnowledgeArticleSummary {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  categorySlug: string;
+  tags: string[];
+  difficulty: DifficultyLevel;
+  readTimeMinutes: number;
+  authorName: string;
+  viewsCount: number;
+  helpfulVotesCount: number;
+  isFeatured: boolean;
+  publishedAt: string;
+}
+
+export interface KnowledgeArticleDetail extends KnowledgeArticleSummary {
+  content: string;
+  hasVotedHelpful?: boolean;
+  relatedArticles?: KnowledgeArticleSummary[];
+}

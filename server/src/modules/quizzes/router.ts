@@ -1,4 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
+import { rateLimit } from 'express-rate-limit'
 import type { PrismaClient } from '@prisma/client'
 import { quizListQuerySchema, quizSlugSchema, submitQuizSchema } from './validation.js'
 import { csrfGuard } from '../auth/router.js'
@@ -13,6 +14,13 @@ function requireUser(req: Request, res: Response, next: NextFunction) {
 
 export function quizzesRouter(prisma: PrismaClient) {
   const router = Router()
+  const quizSubmissionLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 30,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many quiz submissions. Please wait before attempting again.' },
+  })
 
   // GET /api/quizzes - List all available quizzes with user best attempt status
   router.get('/', async (req, res, next) => {
@@ -164,7 +172,7 @@ export function quizzesRouter(prisma: PrismaClient) {
   })
 
   // POST /api/quizzes/:slug/submit - Grade answers server-side, record attempt, award XP
-  router.post('/:slug/submit', requireUser, csrfGuard, async (req, res, next) => {
+  router.post('/:slug/submit', requireUser, csrfGuard, quizSubmissionLimiter, async (req, res, next) => {
     const slugParsed = quizSlugSchema.safeParse(req.params)
     if (!slugParsed.success) return res.status(400).json({ error: 'Invalid quiz identifier.' })
 

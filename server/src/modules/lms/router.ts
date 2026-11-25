@@ -1,4 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
+import { rateLimit } from 'express-rate-limit'
 import type { PrismaClient, DifficultyLevel } from '@prisma/client'
 import { courseQuerySchema, courseSlugSchema, categorySlugSchema, idParamSchema } from './validation.js'
 import { csrfGuard } from '../auth/router.js'
@@ -11,6 +12,13 @@ function requireUser(req: Request, res: Response, next: NextFunction) {
 
 export function lmsRouter(prisma: PrismaClient) {
   const router = Router()
+  const enrollmentLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 50,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Enrollment request limit exceeded. Please try again later.' },
+  })
 
   // ============================================================================
   // CATEGORIES
@@ -219,7 +227,7 @@ export function lmsRouter(prisma: PrismaClient) {
   })
 
   // POST /api/courses/:id/enroll - Enroll user in course
-  router.post('/courses/:id/enroll', requireUser, csrfGuard, async (req, res, next) => {
+  router.post('/courses/:id/enroll', requireUser, csrfGuard, enrollmentLimiter, async (req, res, next) => {
     const parsed = idParamSchema.safeParse(req.params)
     if (!parsed.success) return res.status(400).json({ error: 'Invalid course ID.' })
 

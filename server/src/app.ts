@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import session from 'express-session'
 import connectPgSimple from 'connect-pg-simple'
+import { rateLimit } from 'express-rate-limit'
 import type { PrismaClient } from '@prisma/client'
 import { authRouter, sessionCookieOptions } from './modules/auth/router.js'
 import { progressRouter } from './modules/progress/router.js'
@@ -19,7 +20,7 @@ import type { readConfig } from './config.js'
 
 type AppConfig = ReturnType<typeof readConfig>
 
-export function createApp(prisma: PrismaClient, config: AppConfig, mailer: AccountMailer = createAccountMailer(config)) {
+export function createApp(prisma: PrismaClient, config: AppConfig, mailer: AccountMailer = createAccountMailer(config), sessionStore?: session.Store) {
   const app = express()
   const PgSessionStore = connectPgSimple(session)
   const cookieName = config.NODE_ENV === 'production' ? '__Host-kw_session' : 'kw.sid'
@@ -36,13 +37,55 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   app.disable('x-powered-by')
   if (config.NODE_ENV === 'production') app.set('trust proxy', 1)
   app.locals.isAllowedOrigin = isAllowedOrigin
-  app.use(helmet())
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          fontSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'", config.WEB_ORIGIN, ...(config.NODE_ENV === 'development' ? ['http://localhost:*', 'ws://localhost:*'] : [])],
+          frameAncestors: ["'none'"],
+          objectSrc: ["'none'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"],
+        },
+      },
+      frameguard: { action: 'deny' },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      crossOriginResourcePolicy: { policy: 'same-origin' },
+      crossOriginOpenerPolicy: { policy: 'same-origin' },
+      permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+      xContentTypeOptions: true,
+      dnsPrefetchControl: { allow: false },
+    })
+  )
+  app.use((_req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()')
+    next()
+  })
   app.use(cors({ origin: (origin, callback) => callback(null, !origin || isAllowedOrigin(origin)), credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], allowedHeaders: ['Content-Type', 'X-CSRF-Token'] }))
   app.use(express.json({ limit: '32kb', strict: true }))
+
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: config.NODE_ENV === 'test' ? 10000 : 600,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'Too many requests from this client. Please slow down.' },
+  })
+  app.use('/api', apiLimiter)
   app.use(session({
     name: cookieName,
     secret: config.SESSION_SECRET,
-    store: new PgSessionStore({ conString: config.DATABASE_URL, createTableIfMissing: false, tableName: 'user_sessions' }),
+    store: sessionStore ?? new PgSessionStore({ conString: config.DATABASE_URL, createTableIfMissing: false, tableName: 'user_sessions' }),
     resave: false,
     saveUninitialized: false,
     rolling: true,

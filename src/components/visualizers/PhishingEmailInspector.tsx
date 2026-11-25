@@ -9,6 +9,7 @@ import {
   Search,
   ExternalLink,
 } from 'lucide-react'
+import { sanitizeHtml } from '../../utils/sanitize'
 
 export interface PhishingScenario {
   id: string
@@ -238,7 +239,7 @@ export function PhishingEmailInspector() {
 
           <div
             className="email-body-content"
-            dangerouslySetInnerHTML={{ __html: scenario.bodyHtml }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(scenario.bodyHtml) }}
           />
 
           {/* Action Link with Destination Reveal */}

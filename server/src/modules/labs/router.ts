@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import { Router, type Request, type Response, type NextFunction } from 'express'
+import { rateLimit } from 'express-rate-limit'
 import type { PrismaClient, DifficultyLevel } from '@prisma/client'
 import { labQuerySchema, labSlugSchema, verifyFlagSchema } from './validation.js'
 import { csrfGuard } from '../auth/router.js'
@@ -16,6 +17,13 @@ function sha256(text: string): string {
 
 export function labsRouter(prisma: PrismaClient) {
   const router = Router()
+  const flagVerifyLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 40,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many flag verification attempts. Please wait before retrying.' },
+  })
 
   // GET /api/labs - List all practical labs
   router.get('/labs', async (req, res, next) => {
@@ -236,7 +244,7 @@ export function labsRouter(prisma: PrismaClient) {
   })
 
   // POST /api/labs/:slug/verify - Verify submitted task flag / answer
-  router.post('/labs/:slug/verify', requireUser, csrfGuard, async (req, res, next) => {
+  router.post('/labs/:slug/verify', requireUser, csrfGuard, flagVerifyLimiter, async (req, res, next) => {
     const slugParsed = labSlugSchema.safeParse(req.params)
     if (!slugParsed.success) return res.status(400).json({ error: 'Invalid lab slug.' })
 

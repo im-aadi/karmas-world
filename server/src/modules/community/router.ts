@@ -250,7 +250,7 @@ export function communityRouter(prisma: PrismaClient) {
   // FORUMS: Thread Detail
   // ==========================================
   router.get('/forums/threads/:slug', async (req, res, next) => {
-    const slug = req.params.slug
+    const slug = String(req.params.slug)
     const userId = req.session?.userId
 
     try {
@@ -400,7 +400,7 @@ export function communityRouter(prisma: PrismaClient) {
   // FORUMS: Create Reply
   // ==========================================
   router.post('/forums/threads/:slug/replies', requireUser, csrfGuard, submissionLimit, async (req, res, next) => {
-    const slug = req.params.slug
+    const slug = String(req.params.slug)
     const parsed = createReplySchema.safeParse(req.body)
     if (!parsed.success) {
       return res.status(400).json({ error: parsed.error.issues[0]?.message || 'Invalid reply content.' })
@@ -459,7 +459,7 @@ export function communityRouter(prisma: PrismaClient) {
   // FORUMS: Vote Thread
   // ==========================================
   router.post('/forums/threads/:slug/vote', requireUser, csrfGuard, async (req, res, next) => {
-    const slug = req.params.slug
+    const slug = String(req.params.slug)
     const userId = req.session.userId!
 
     try {
@@ -506,7 +506,7 @@ export function communityRouter(prisma: PrismaClient) {
   // FORUMS: Vote Reply
   // ==========================================
   router.post('/forums/replies/:replyId/vote', requireUser, csrfGuard, async (req, res, next) => {
-    const replyId = req.params.replyId
+    const replyId = String(req.params.replyId)
     const userId = req.session.userId!
 
     try {
@@ -624,7 +624,7 @@ export function communityRouter(prisma: PrismaClient) {
   // KNOWLEDGE BASE: Article Detail
   // ==========================================
   router.get('/articles/:slug', async (req, res, next) => {
-    const slug = req.params.slug
+    const slug = String(req.params.slug)
 
     try {
       let article = await prisma.knowledgeArticle.findUnique({
@@ -710,7 +710,7 @@ export function communityRouter(prisma: PrismaClient) {
   // KNOWLEDGE BASE: Article Feedback
   // ==========================================
   router.post('/articles/:slug/helpful', async (req, res, next) => {
-    const slug = req.params.slug
+    const slug = String(req.params.slug)
     try {
       const article = await prisma.knowledgeArticle.update({
         where: { slug },

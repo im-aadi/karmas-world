@@ -179,7 +179,7 @@ export function adminRouter(prisma: PrismaClient) {
   })
 
   router.get('/users/:userId', adminOnly, async (req, res, next) => {
-    const userId = req.params.userId
+    const userId = String(req.params.userId)
     try {
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -235,7 +235,7 @@ export function adminRouter(prisma: PrismaClient) {
   })
 
   router.patch('/users/:userId/role', adminOnly, csrfGuard, async (req, res, next) => {
-    const userId = req.params.userId
+    const userId = String(req.params.userId)
     const parsed = userRoleSchema.safeParse(req.body)
     if (!parsed.success) return res.status(400).json({ error: 'Choose a valid account role (LEARNER or ADMIN).' })
 
@@ -255,8 +255,8 @@ export function adminRouter(prisma: PrismaClient) {
       await prisma.securityEvent.create({
         data: {
           userId,
-          type: 'ACCOUNT_UPDATED',
-          userAgent: req.headers['user-agent'] || 'Karma Admin Console',
+          type: 'SESSION_REVOKED',
+          userAgent: (req.headers['user-agent'] as string) || 'Karma Admin Console',
         },
       }).catch(() => {})
 
@@ -373,7 +373,7 @@ export function adminRouter(prisma: PrismaClient) {
   })
 
   router.patch('/courses/:courseId', adminOnly, csrfGuard, async (req, res, next) => {
-    const courseId = req.params.courseId
+    const courseId = String(req.params.courseId)
     const parsed = editCourseSchema.safeParse(req.body)
     if (!parsed.success) return res.status(400).json({ error: 'Invalid course update fields.' })
 
@@ -411,7 +411,7 @@ export function adminRouter(prisma: PrismaClient) {
   })
 
   router.delete('/courses/:courseId', adminOnly, csrfGuard, async (req, res, next) => {
-    const courseId = req.params.courseId
+    const courseId = String(req.params.courseId)
     try {
       await prisma.course.delete({ where: { id: courseId } })
       res.json({ success: true, message: 'Course removed successfully.' })
@@ -458,7 +458,7 @@ export function adminRouter(prisma: PrismaClient) {
   })
 
   router.patch('/moderation/threads/:threadId', adminOnly, csrfGuard, async (req, res, next) => {
-    const threadId = req.params.threadId
+    const threadId = String(req.params.threadId)
     const parsed = threadModerationSchema.safeParse(req.body)
     if (!parsed.success) return res.status(400).json({ error: 'Choose a valid moderation action.' })
 

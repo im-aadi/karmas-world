@@ -80,8 +80,8 @@ karmas-world/
 | **Phase 4** | **Learning Management System (20 Categories, Modules, Lessons, Enrollments, Bookmarks)** | ✅ Complete |
 | **Phase 5** | **Cybersecurity Labs (Isolated Sandboxes, Linux, Net, Web, Crypto)** | ✅ Complete |
 | **Phase 6** | **Gamification (XP, Levels, Ranks, Streaks, Badges, Weekly Missions)** | ✅ Complete |
-| **Phase 7** | **Interactive Learning (OSI/TCP-IP Visualizers, Topologies, Monaco)** | 🔄 Next Up |
-| **Phase 8** | **Quizzes & Assessments (Timed Exams, Auto-Grading, Explanations)** | 📋 Planned |
+| **Phase 7** | **Interactive Learning (OSI/TCP-IP Visualizers, Topologies, Monaco)** | ✅ Complete |
+| **Phase 8** | **Quizzes & Assessments (Timed Exams, Auto-Grading, Explanations)** | 🔄 Next Up |
 | **Phase 9** | **Community & Knowledge Base (Forums, Articles, Moderation)** | 📋 Planned |
 | **Phase 10** | **Admin Dashboard (User/Course Management, Analytics, Moderation)** | 📋 Planned |
 | **Phase 11** | **Testing & Security Hardening (E2E, Audit, Vulnerability Scans)** | 📋 Planned |

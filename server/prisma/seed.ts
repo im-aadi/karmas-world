@@ -487,6 +487,212 @@ async function main() {
   }
   console.log(`✓ Seeded ${weeklyChallenges.length} active weekly challenges`)
 
+  // 5. Seed Core Cybersecurity Assessments & Quizzes
+  const seedQuizzes = [
+    {
+      slug: 'networking-fundamentals-assessment',
+      title: 'Computer Networking & Protocols Assessment',
+      description: 'Validate your knowledge of OSI layers, TCP/UDP transport mechanisms, IP addressing, and perimeter port mapping.',
+      categorySlug: 'computer-networking',
+      difficulty: DifficultyLevel.BEGINNER,
+      timeLimitMins: 15,
+      passingScore: 70,
+      xpReward: 150,
+      questions: [
+        {
+          prompt: 'At which layer of the OSI model does a stateful firewall operate when inspecting TCP SYN and ACK flags?',
+          codeSnippet: null,
+          explanation: 'Transport Layer (Layer 4) handles end-to-end communication, port addressing (e.g. 80, 443), and connection state tracking using TCP control flags.',
+          orderIndex: 0,
+          points: 20,
+          options: [
+            { text: 'Layer 2 (Data Link Layer)', isCorrect: false, orderIndex: 0 },
+            { text: 'Layer 3 (Network Layer)', isCorrect: false, orderIndex: 1 },
+            { text: 'Layer 4 (Transport Layer)', isCorrect: true, orderIndex: 2 },
+            { text: 'Layer 7 (Application Layer)', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'Which of the following IP addresses is classified as a private RFC 1918 non-routable address?',
+          codeSnippet: null,
+          explanation: '172.24.10.5 falls within the RFC 1918 Class B private address block (172.16.0.0 to 172.31.255.255).',
+          orderIndex: 1,
+          points: 20,
+          options: [
+            { text: '8.8.8.8', isCorrect: false, orderIndex: 0 },
+            { text: '172.24.10.5', isCorrect: true, orderIndex: 1 },
+            { text: '198.51.100.25', isCorrect: false, orderIndex: 2 },
+            { text: '203.0.113.195', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'What critical security vulnerability is mitigated by implementing Dynamic ARP Inspection (DAI)?',
+          codeSnippet: null,
+          explanation: 'DAI inspects ARP packets on untrusted switch ports against the DHCP snooping binding database to prevent ARP poisoning/spoofing and Man-in-the-Middle attacks.',
+          orderIndex: 2,
+          points: 20,
+          options: [
+            { text: 'BGP Route Hijacking', isCorrect: false, orderIndex: 0 },
+            { text: 'SQL Injection', isCorrect: false, orderIndex: 1 },
+            { text: 'ARP Spoofing / Man-in-the-Middle', isCorrect: true, orderIndex: 2 },
+            { text: 'SYN Flood Exhaustion', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'Which protocol is connectionless, does not provide packet reordering, and is commonly targeted in UDP amplification DDoS attacks?',
+          codeSnippet: null,
+          explanation: 'UDP is a connectionless transport protocol that lacks handshake verification, allowing attackers to spoof source IPs in amplification attacks (e.g. DNS or NTP reflection).',
+          orderIndex: 3,
+          points: 20,
+          options: [
+            { text: 'TCP', isCorrect: false, orderIndex: 0 },
+            { text: 'UDP', isCorrect: true, orderIndex: 1 },
+            { text: 'SCTP', isCorrect: false, orderIndex: 2 },
+            { text: 'BGP', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'What port does the SSH (Secure Shell) protocol use by default for encrypted remote command-line administration?',
+          codeSnippet: null,
+          explanation: 'TCP Port 22 is the standard IANA assigned port for encrypted SSH management.',
+          orderIndex: 4,
+          points: 20,
+          options: [
+            { text: 'Port 21', isCorrect: false, orderIndex: 0 },
+            { text: 'Port 22', isCorrect: true, orderIndex: 1 },
+            { text: 'Port 23', isCorrect: false, orderIndex: 2 },
+            { text: 'Port 3389', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+      ],
+    },
+    {
+      slug: 'web-app-security-owasp-quiz',
+      title: 'OWASP Top 10 Web Application Security Exam',
+      description: 'Demonstrate mastery over SQL injection, Cross-Site Scripting (XSS), Broken Object Level Authorization (BOLA), and CSRF mitigations.',
+      categorySlug: 'web-application-security',
+      difficulty: DifficultyLevel.INTERMEDIATE,
+      timeLimitMins: 20,
+      passingScore: 70,
+      xpReward: 200,
+      questions: [
+        {
+          prompt: 'Which coding practice provides the most effective defense against SQL injection attacks in relational databases?',
+          codeSnippet: 'SELECT * FROM users WHERE username = ? AND password_hash = ?;',
+          explanation: 'Parameterized queries (Prepared Statements) ensure the database engine treats untrusted input strictly as data, never as executable SQL instructions.',
+          orderIndex: 0,
+          points: 20,
+          options: [
+            { text: 'Escaping single quotes with regex replace', isCorrect: false, orderIndex: 0 },
+            { text: 'Parameterized Prepared Statements with ORMs', isCorrect: true, orderIndex: 1 },
+            { text: 'Base64 encoding all input fields before insertion', isCorrect: false, orderIndex: 2 },
+            { text: 'Client-side HTML input maxlength restrictions', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'What HTTP response header effectively prevents Clickjacking attacks by forbidding an untrusted site from rendering your pages in an <iframe>?',
+          codeSnippet: null,
+          explanation: 'X-Frame-Options: DENY (or CSP frame-ancestors \'none\') instructs web browsers not to display the application within any iframe, mitigating UI redressing/clickjacking.',
+          orderIndex: 1,
+          points: 20,
+          options: [
+            { text: 'Access-Control-Allow-Origin', isCorrect: false, orderIndex: 0 },
+            { text: 'X-Frame-Options: DENY', isCorrect: true, orderIndex: 1 },
+            { text: 'Strict-Transport-Security', isCorrect: false, orderIndex: 2 },
+            { text: 'X-Content-Type-Options: nosniff', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'Which vulnerability occurs when an API endpoint uses user-supplied object IDs without verifying if the requesting user possesses authorization to access that specific record?',
+          codeSnippet: 'GET /api/v1/invoices/1094 HTTP/1.1\nHost: api.karmas.world',
+          explanation: 'Broken Object Level Authorization (BOLA / IDOR) allows attackers to tamper with identifiers in API requests to access records belonging to other tenants.',
+          orderIndex: 2,
+          points: 20,
+          options: [
+            { text: 'Broken Object Level Authorization (BOLA / IDOR)', isCorrect: true, orderIndex: 0 },
+            { text: 'Cross-Site Scripting (XSS)', isCorrect: false, orderIndex: 1 },
+            { text: 'Server-Side Request Forgery (SSRF)', isCorrect: false, orderIndex: 2 },
+            { text: 'Padding Oracle', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'What cookie attribute prevents client-side JavaScript (e.g. from an XSS vulnerability) from reading or stealing session tokens via document.cookie?',
+          codeSnippet: null,
+          explanation: 'The HttpOnly flag blocks JavaScript access to the cookie, ensuring stored session identifiers cannot be exfiltrated via injected scripts.',
+          orderIndex: 3,
+          points: 20,
+          options: [
+            { text: 'SameSite=Lax', isCorrect: false, orderIndex: 0 },
+            { text: 'Secure', isCorrect: false, orderIndex: 1 },
+            { text: 'HttpOnly', isCorrect: true, orderIndex: 2 },
+            { text: 'Domain=.karmas.world', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+        {
+          prompt: 'In a Server-Side Request Forgery (SSRF) vulnerability, what is the primary threat vector exploited by the attacker?',
+          codeSnippet: null,
+          explanation: 'SSRF forces the back-end application server to issue unauthorized HTTP/network requests to internal resources, cloud metadata APIs (e.g. 169.254.169.254), or local services.',
+          orderIndex: 4,
+          points: 20,
+          options: [
+            { text: 'Abusing the server to make requests to internal services or cloud metadata', isCorrect: true, orderIndex: 0 },
+            { text: 'Injecting malicious scripts into victim browsers', isCorrect: false, orderIndex: 1 },
+            { text: 'Exhausting database disk space with oversized payloads', isCorrect: false, orderIndex: 2 },
+            { text: 'Brute-forcing TLS session tickets', isCorrect: false, orderIndex: 3 },
+          ],
+        },
+      ],
+    },
+  ]
+
+  for (const qData of seedQuizzes) {
+    const { questions, ...quizFields } = qData
+    const quiz = await prisma.quiz.upsert({
+      where: { slug: quizFields.slug },
+      update: {
+        title: quizFields.title,
+        description: quizFields.description,
+        categorySlug: quizFields.categorySlug,
+        difficulty: quizFields.difficulty,
+        timeLimitMins: quizFields.timeLimitMins,
+        passingScore: quizFields.passingScore,
+        xpReward: quizFields.xpReward,
+      },
+      create: quizFields,
+    })
+
+    // Upsert questions & options
+    for (const q of questions) {
+      const { options, ...qFields } = q
+      const existingQ = await prisma.quizQuestion.findFirst({
+        where: { quizId: quiz.id, orderIndex: qFields.orderIndex },
+      })
+
+      const createdQ = existingQ
+        ? await prisma.quizQuestion.update({
+            where: { id: existingQ.id },
+            data: qFields,
+          })
+        : await prisma.quizQuestion.create({
+            data: { ...qFields, quizId: quiz.id },
+          })
+
+      // Clean old options and seed new
+      await prisma.quizOption.deleteMany({ where: { questionId: createdQ.id } })
+      for (const opt of options) {
+        await prisma.quizOption.create({
+          data: {
+            questionId: createdQ.id,
+            text: opt.text,
+            isCorrect: opt.isCorrect,
+            orderIndex: opt.orderIndex,
+          },
+        })
+      }
+    }
+  }
+  console.log(`✓ Seeded ${seedQuizzes.length} cybersecurity assessment examinations`)
+
   console.log('Seeding completed successfully.')
 }
 

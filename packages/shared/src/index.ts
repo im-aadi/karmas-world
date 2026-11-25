@@ -404,3 +404,95 @@ export interface GamificationStats {
 }
 
 
+
+
+// Phase 8: Quiz & Assessment Engine Types
+export interface QuizOptionItem {
+  id: string;
+  text: string;
+  orderIndex: number;
+  isCorrect?: boolean; // Only present in results/review
+}
+
+export interface QuizQuestionItem {
+  id: string;
+  prompt: string;
+  codeSnippet?: string | null;
+  orderIndex: number;
+  points: number;
+  options: QuizOptionItem[];
+  explanation?: string; // Only present in results/review
+  userSelectedOptionId?: string | null;
+}
+
+export interface QuizSummary {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  categorySlug: CybersecurityCategory;
+  difficulty: DifficultyLevel;
+  timeLimitMins: number;
+  passingScore: number;
+  xpReward: number;
+  totalQuestions: number;
+  totalPoints: number;
+  bestAttempt?: {
+    score: number;
+    maxScore: number;
+    percentage: number;
+    passed: boolean;
+    completedAt: string;
+  } | null;
+}
+
+export interface QuizDetail extends QuizSummary {
+  questions: QuizQuestionItem[];
+}
+
+export interface SubmitQuizPayload {
+  answers: Record<string, string>; // { [questionId]: optionId }
+  timeSpentSecs: number;
+}
+
+export interface QuestionReviewItem {
+  questionId: string;
+  prompt: string;
+  codeSnippet?: string | null;
+  explanation: string;
+  selectedOptionId: string | null;
+  correctOptionId: string;
+  isCorrect: boolean;
+  pointsEarned: number;
+  maxPoints: number;
+  options: Array<{
+    id: string;
+    text: string;
+    isCorrect: boolean;
+  }>;
+}
+
+export interface QuizResultResponse {
+  quizId: string;
+  slug: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  passed: boolean;
+  passingScore: number;
+  xpAwarded: number;
+  timeSpentSecs: number;
+  review: QuestionReviewItem[];
+}
+
+export interface QuizAttemptRecord {
+  id: string;
+  quizId: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  passed: boolean;
+  timeSpentSecs: number;
+  xpAwarded: number;
+  completedAt: string;
+}

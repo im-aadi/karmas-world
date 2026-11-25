@@ -13,6 +13,7 @@ import { newsRouter } from './modules/news/router.js'
 import { lmsRouter } from './modules/lms/router.js'
 import { labsRouter } from './modules/labs/router.js'
 import { gamificationRouter } from './modules/gamification/router.js'
+import { quizzesRouter } from './modules/quizzes/router.js'
 import { createAccountMailer, type AccountMailer } from './modules/auth/mailer.js'
 import type { readConfig } from './config.js'
 
@@ -63,6 +64,7 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   app.use('/api', lmsRouter(prisma))
   app.use('/api', labsRouter(prisma))
   app.use('/api/gamification', gamificationRouter(prisma))
+  app.use('/api/quizzes', quizzesRouter(prisma))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'API route not found.' }))
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     console.error('API request failed', error instanceof Error ? error.message : 'Unknown error')

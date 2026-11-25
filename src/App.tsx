@@ -13,6 +13,7 @@ import { CourseCatalog } from './components/CourseCatalog'
 import type { CatalogCourse } from './data/catalog'
 import { LabCatalog } from './components/labs/LabCatalog'
 import { InteractiveVisualizersSection } from './components/visualizers/InteractiveVisualizersSection'
+import { QuizCatalog } from './components/quizzes/QuizCatalog'
 import { LearningAcademy } from './components/LearningAcademy'
 import { CyberGames } from './components/CyberGames'
 import { PracticeLab } from './components/PracticeLab'
@@ -168,6 +169,7 @@ function App() {
       <CourseCatalog onStartCourse={handleStartCatalogCourse} />
       <LabCatalog csrfToken={csrfToken} />
       <InteractiveVisualizersSection />
+      <QuizCatalog csrfToken={csrfToken} />
       <LearningAcademy accountId={account?.id ?? null} csrfToken={csrfToken} lessonRequest={lessonRequest} />
       <Glossary onOpenLesson={(courseId, lessonIndex) => setLessonRequest({ courseId, lessonIndex })} />
       <CyberGames />

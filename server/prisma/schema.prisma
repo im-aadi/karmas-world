@@ -94,6 +94,7 @@ model User {
   totalXp                   Int                         @default(0)
   xpTransactions            XPTransaction[]
   weeklyClaims              UserWeeklyChallengeClaim[]
+  quizAttempts              QuizAttempt[]
 }
 
 model SecurityEvent {
@@ -169,6 +170,7 @@ model Course {
   category    Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   modules     Module[]
   enrollments Enrollment[]
+  quizzes     Quiz[]
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
@@ -420,3 +422,71 @@ model UserWeeklyChallengeClaim {
 }
 
 
+
+
+model Quiz {
+  id            String          @id @default(cuid())
+  slug          String          @unique @db.VarChar(80)
+  title         String          @db.VarChar(180)
+  description   String          @db.VarChar(1000)
+  categorySlug  String          @db.VarChar(60)
+  difficulty    DifficultyLevel @default(BEGINNER)
+  timeLimitMins Int             @default(15)
+  passingScore  Int             @default(70)
+  xpReward      Int             @default(150)
+  courseId      String?
+  course        Course?         @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  questions     QuizQuestion[]
+  attempts      QuizAttempt[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([categorySlug])
+  @@index([difficulty])
+  @@index([slug])
+}
+
+model QuizQuestion {
+  id          String       @id @default(cuid())
+  quizId      String
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  prompt      String       @db.Text
+  codeSnippet String?      @db.Text
+  explanation String       @db.Text
+  orderIndex  Int          @default(0)
+  points      Int          @default(10)
+  options     QuizOption[]
+
+  @@index([quizId, orderIndex])
+}
+
+model QuizOption {
+  id         String       @id @default(cuid())
+  questionId String
+  question   QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String       @db.VarChar(600)
+  isCorrect  Boolean      @default(false)
+  orderIndex Int          @default(0)
+
+  @@index([questionId, orderIndex])
+}
+
+model QuizAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId        String
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  score         Int
+  maxScore      Int
+  percentage    Int
+  passed        Boolean
+  timeSpentSecs Int      @default(0)
+  answers       Json     @default("{}") @db.JsonB
+  xpAwarded     Int      @default(0)
+  startedAt     DateTime @default(now())
+  completedAt   DateTime @default(now())
+
+  @@index([userId, quizId])
+  @@index([userId, completedAt])
+}

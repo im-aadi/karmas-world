@@ -102,12 +102,12 @@ export async function fetchQuizzes(filters?: {
       totalPoints,
       bestAttempt: best
         ? {
-            score: best.score,
-            maxScore: best.maxScore,
-            percentage: best.percentage,
-            passed: best.passed,
-            completedAt: best.completedAt,
-          }
+          score: best.score,
+          maxScore: best.maxScore,
+          percentage: best.percentage,
+          passed: best.passed,
+          completedAt: best.completedAt,
+        }
         : null,
     }
   })
@@ -189,12 +189,12 @@ export async function fetchQuiz(slug: string): Promise<QuizDetail> {
     totalPoints,
     bestAttempt: best
       ? {
-          score: best.score,
-          maxScore: best.maxScore,
-          percentage: best.percentage,
-          passed: best.passed,
-          completedAt: best.completedAt,
-        }
+        score: best.score,
+        maxScore: best.maxScore,
+        percentage: best.percentage,
+        passed: best.passed,
+        completedAt: best.completedAt,
+      }
       : null,
     questions: localQuiz.questions.map((q) => ({
       id: q.id,

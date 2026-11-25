@@ -578,3 +578,106 @@ export interface KnowledgeArticleDetail extends KnowledgeArticleSummary {
   hasVotedHelpful?: boolean;
   relatedArticles?: KnowledgeArticleSummary[];
 }
+
+// Phase 10: Admin Dashboard Interfaces
+export interface AdminUserSummary {
+  id: string;
+  displayName: string;
+  email: string;
+  role: 'LEARNER' | 'ADMIN';
+  totalXp: number;
+  rankTitle: string;
+  emailVerified: boolean;
+  mfaEnabled: boolean;
+  completedLessonsCount: number;
+  enrollmentsCount: number;
+  createdAt: string;
+}
+
+export interface AdminUserDetail extends AdminUserSummary {
+  recentSecurityEvents: Array<{
+    id: string;
+    type: string;
+    userAgent: string | null;
+    createdAt: string;
+  }>;
+  recentQuizAttempts: Array<{
+    quizTitle: string;
+    score: number;
+    maxScore: number;
+    passed: boolean;
+    completedAt: string;
+  }>;
+}
+
+export interface AdminCourseSummary {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  level: DifficultyLevel;
+  duration: string;
+  xpReward: number;
+  categorySlug: string;
+  categoryName: string;
+  modulesCount: number;
+  lessonsCount: number;
+  enrolledLearnersCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCoursePayload {
+  title: string;
+  slug: string;
+  description: string;
+  level: DifficultyLevel;
+  duration: string;
+  xpReward: number;
+  categorySlug: string;
+}
+
+export interface EditCoursePayload {
+  title?: string;
+  description?: string;
+  level?: DifficultyLevel;
+  duration?: string;
+  xpReward?: number;
+}
+
+export interface AdminSecurityEventLog {
+  id: string;
+  type: string;
+  userAgent: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    displayName: string;
+    email: string;
+  };
+}
+
+export interface AdminPlatformAnalytics {
+  totalLearners: number;
+  totalAdmins: number;
+  totalLessonsCompleted: number;
+  totalXpAwarded: number;
+  totalEnrollments: number;
+  totalQuizAttempts: number;
+  quizPassingRatePercent: number;
+  totalForumThreads: number;
+  openReports: number;
+  topCourses: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    enrolledCount: number;
+    level: string;
+  }>;
+  recentSecurityEvents: AdminSecurityEventLog[];
+  generatedAt: string;
+}
+
+export interface AdminThreadModerationPayload {
+  action: 'PIN' | 'UNPIN' | 'LOCK' | 'UNLOCK' | 'APPROVE' | 'HIDE';
+}

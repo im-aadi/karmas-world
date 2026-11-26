@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate && tsc -p tsconfig.json && node -e \"import('node:fs').then(fs => { const pkg = JSON.parse(fs.readFileSync('package.json')); fs.writeFileSync('dist/package.json', JSON.stringify({type:'module',main:'index.js',dependencies:pkg.dependencies}, null, 2)); })\"",
+    "build": "prisma generate && node build.js",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",

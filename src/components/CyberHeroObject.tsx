@@ -50,6 +50,8 @@ export function CyberHeroObject() {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas || navigator.userAgent.includes('jsdom')) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
     let animId: number
     const size = 420

@@ -7,5 +7,8 @@ export default defineConfig({
   server: {
     proxy: { '/api': { target: 'http://127.0.0.1:4000', changeOrigin: false } },
   },
+  preview: {
+    proxy: { '/api': { target: 'http://127.0.0.1:4000', changeOrigin: false } },
+  },
   test: { environment: 'jsdom', environmentOptions: { jsdom: { url: 'http://localhost/' } }, setupFiles: './tests/setup.ts', exclude: ['node_modules/**', 'server/**', 'dist/**'] },
 })

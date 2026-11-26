@@ -20,8 +20,31 @@ type PasswordChangeResponse = { user: LearnerAccount; csrfToken: string; otherSe
 type ProgressResponse = { progress: Array<{ courseId: string; lessonIndex: number }> }
 
 async function readJson<T>(response: Response): Promise<T> {
-  const body = await response.json().catch(() => ({})) as { error?: string }
-  if (!response.ok) throw new Error(body.error ?? 'The account service is unavailable.')
+  let body: Record<string, unknown> = {}
+  try {
+    body = (await response.json()) as Record<string, unknown>
+  } catch {
+    body = {}
+  }
+
+  if (!response.ok) {
+    let message = 'The account service is temporarily unavailable.'
+    if (typeof body.error === 'string' && body.error.trim()) {
+      message = body.error
+    } else if (body.error && typeof body.error === 'object') {
+      const errObj = body.error as Record<string, unknown>
+      if (errObj.code === 'ECONNREFUSED' || errObj.errno === -4078) {
+        message = 'The backend API server is not running on port 4000. Start the server or use Local Learner mode.'
+      } else if (typeof errObj.message === 'string') {
+        message = errObj.message
+      } else {
+        message = 'Backend connection error. Please verify the API server is active.'
+      }
+    } else if (typeof body.message === 'string' && body.message.trim()) {
+      message = body.message
+    }
+    throw new Error(message)
+  }
   return body as T
 }
 

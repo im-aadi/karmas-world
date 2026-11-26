@@ -99,7 +99,7 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
 
   router.post('/register', authLimiter, csrfGuard, async (req, res, next) => {
     const parsed = registerSchema.safeParse(req.body)
-    if (!parsed.success) return res.status(400).json({ error: 'Enter a name, valid email, and password of at least 15 characters.' })
+    if (!parsed.success) return res.status(400).json({ error: 'Enter a name, valid email, and password of at least 8 characters.' })
     try {
       const existing = await prisma.user.findUnique({ where: { email: parsed.data.email }, select: { id: true } })
       if (existing) return res.status(202).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })

@@ -20,6 +20,7 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
   const [notice, setNotice] = useState('')
   const [verificationSent, setVerificationSent] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [offlineAvailable, setOfflineAvailable] = useState(false)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -32,10 +33,18 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
         await onAuthenticated(result.user, result.csrfToken)
         onClose()
       } else if (mode === 'register') {
-        const result = await register(displayName, email, password)
-        setPassword('')
-        setVerificationSent(true)
-        setNotice(result.message)
+        try {
+          const result = await register(displayName, email, password)
+          setPassword('')
+          setVerificationSent(true)
+          setNotice(result.message)
+        } catch (regErr) {
+          const msg = regErr instanceof Error ? regErr.message : String(regErr)
+          if (msg.includes('backend') || msg.includes('unavailable') || msg.includes('Failed to fetch') || msg.includes('not running')) {
+            setOfflineAvailable(true)
+          }
+          throw regErr
+        }
       } else if (mode === 'forgot') {
         const result = await requestPasswordReset(email)
         setNotice(result.message)
@@ -101,9 +110,33 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
       <form className="account-form" onSubmit={submit}>
         {mode === 'register' && <label>Your name<input required minLength={2} maxLength={60} autoComplete="name" value={displayName} onChange={event => setDisplayName(event.target.value)} /></label>}
         {mode !== 'mfa' && <label>Email address<input required type="email" maxLength={254} autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} /></label>}
-        {(mode === 'login' || mode === 'register') && <label>Password<input required type="password" minLength={mode === 'register' ? 15 : 1} maxLength={128} autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={password} onChange={event => setPassword(event.target.value)} />{mode === 'register' && <small>Use at least 15 characters.</small>}</label>}
+        {(mode === 'login' || mode === 'register') && <label>Password<input required type="password" minLength={mode === 'register' ? 8 : 1} maxLength={128} autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={password} onChange={event => setPassword(event.target.value)} />{mode === 'register' && <small>Use at least 8 characters.</small>}</label>}
         {mode === 'mfa' && <label>Authenticator or recovery code<input required autoFocus autoComplete="one-time-code" inputMode="text" maxLength={32} value={mfaCode} onChange={event => setMfaCode(event.target.value)} /></label>}
         {error && <p className="account-error" role="alert">{error}</p>}
+        {offlineAvailable && (
+          <div className="offline-fallback-box" style={{ margin: '4px 0 10px', padding: '12px', background: 'rgba(184, 242, 126, 0.08)', borderRadius: '6px', border: '1px solid rgba(184, 242, 126, 0.25)' }}>
+            <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#d0ffa9', lineHeight: 1.5 }}>
+              The backend API server is offline. You can continue instantly in <strong>Local Learner Mode</strong> to save your progress in this browser.
+            </p>
+            <button
+              type="button"
+              className="button-primary"
+              style={{ width: '100%', fontSize: '11px', padding: '8px 12px', justifyContent: 'center' }}
+              onClick={() => {
+                const localUser: LearnerAccount = {
+                  id: 'local-' + Date.now(),
+                  displayName: displayName.trim() || 'Learner',
+                  email: email.trim() || 'learner@local',
+                  role: 'LEARNER',
+                }
+                void onAuthenticated(localUser, 'local-offline-csrf')
+                onClose()
+              }}
+            >
+              Continue as Local Learner <ArrowRight size={14} />
+            </button>
+          </div>
+        )}
         {notice && <p className="account-notice-inline" role="status">{notice}</p>}
         <button className="button-primary account-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'register' ? 'Create account' : mode === 'forgot' ? 'Send reset email' : mode === 'mfa' ? 'Verify and sign in' : 'Sign in'} {mode === 'mfa' ? <KeyRound size={15} /> : <ArrowRight size={15} />}</button>
       </form>

@@ -37,3 +37,5 @@ Thumbs.db
 *.sublime-workspace
 
 .vercel
+.env*
+.neon

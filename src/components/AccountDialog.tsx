@@ -35,6 +35,11 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
       } else if (mode === 'register') {
         try {
           const result = await register(displayName, email, password)
+          if (result.user && result.csrfToken) {
+            await onAuthenticated(result.user, result.csrfToken)
+            onClose()
+            return
+          }
           setPassword('')
           setVerificationSent(true)
           setNotice(result.message)

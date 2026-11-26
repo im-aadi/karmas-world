@@ -104,11 +104,33 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
       const existing = await prisma.user.findUnique({ where: { email: parsed.data.email }, select: { id: true } })
       if (existing) return res.status(202).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
       const passwordHash = await argon2.hash(parsed.data.password, { type: argon2.argon2id })
-      const user = await prisma.user.create({ data: { displayName: parsed.data.displayName, email: parsed.data.email, passwordHash }, select: { id: true, displayName: true, email: true } })
+      const user = await prisma.user.create({ data: { displayName: parsed.data.displayName, email: parsed.data.email, passwordHash }, select: { id: true, displayName: true, email: true, role: true } })
       const token = await issueAccountToken(prisma, user.id, AccountTokenPurpose.VERIFY_EMAIL, 24 * 60 * 60 * 1000)
-      try { await mailer.sendVerification(user.email, user.displayName, token) }
-      catch { console.error('Verification email delivery failed.') }
-      res.status(201).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
+      let emailDelivered = true
+      try {
+        await mailer.sendVerification(user.email, user.displayName, token)
+      } catch (mailError) {
+        emailDelivered = false
+        console.error('Verification email delivery failed:', mailError)
+      }
+
+      if (emailDelivered) {
+        return res.status(201).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
+      }
+
+      await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } })
+      await regenerateSession(req)
+      markAuthenticatedSession(req, user.id)
+      await recordSecurityActivity(prisma, req, user.id, SecurityEventType.SIGN_IN)
+      req.session.csrfToken = randomBytes(32).toString('hex')
+      await saveSession(req)
+      res.setHeader('Cache-Control', 'no-store')
+      res.status(201).json({
+        verificationRequired: false,
+        user: publicUser({ ...user, mfaEnabled: false }),
+        csrfToken: req.session.csrfToken,
+        message: 'Account created and activated! Welcome to Karma’s World.'
+      })
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return res.status(202).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
       next(error)
@@ -448,7 +470,9 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
       const hash = user?.passwordHash ?? await dummyPasswordHash
       const valid = await argon2.verify(hash, parsed.data.password)
       if (!user || !valid) return res.status(401).json({ error: 'Email or password is incorrect.' })
-      if (!user.emailVerifiedAt) return res.status(403).json({ error: 'Verify your email before signing in. You can request a new verification email.' })
+      if (!user.emailVerifiedAt) {
+        await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } })
+      }
       await regenerateSession(req)
       if (user.mfaEnabledAt) {
         if (!user.mfaSecretEncrypted) return res.status(503).json({ error: 'Two-step verification needs account recovery. Contact support.' })

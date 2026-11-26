@@ -26,4 +26,9 @@ describe('API configuration', () => {
     expect(() => readConfig({ ...base, NODE_ENV: 'production', SMTP_HOST: 'smtp.example.com', SMTP_FROM: 'accounts@example.com' })).toThrow(/MFA_ENCRYPTION_KEY/)
     expect(readConfig({ ...base, NODE_ENV: 'production', SMTP_HOST: 'smtp.example.com', SMTP_FROM: 'accounts@example.com', MFA_ENCRYPTION_KEY: 'a'.repeat(64) }).MFA_ENCRYPTION_KEY).toBe('a'.repeat(64))
   })
+
+  it('accepts APP_URL service binding or VERCEL_URL as WEB_ORIGIN fallback', () => {
+    expect(readConfig({ ...base, APP_URL: 'https://karmas-world-app.vercel.internal' }).WEB_ORIGIN).toBe('https://karmas-world-app.vercel.internal')
+    expect(readConfig({ ...base, VERCEL_URL: 'karmas-world.vercel.app' }).WEB_ORIGIN).toBe('https://karmas-world.vercel.app')
+  })
 })

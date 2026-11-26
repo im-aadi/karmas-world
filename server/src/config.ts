@@ -18,7 +18,11 @@ const schema = z.object({
 })
 
 export function readConfig(source: NodeJS.ProcessEnv = process.env) {
-  const parsed = schema.parse(source)
+  const effectiveSource = {
+    ...source,
+    WEB_ORIGIN: source.WEB_ORIGIN || source.APP_URL || (source.VERCEL_URL ? `https://${source.VERCEL_URL}` : undefined),
+  }
+  const parsed = schema.parse(effectiveSource)
   if (parsed.NODE_ENV === 'production' && (!parsed.SMTP_HOST || !parsed.SMTP_FROM)) throw new Error('SMTP_HOST and SMTP_FROM must be configured in production.')
   if (parsed.NODE_ENV === 'production' && ['localhost', '127.0.0.1', '::1'].includes(parsed.SMTP_HOST?.toLowerCase() ?? '')) throw new Error('Production SMTP_HOST must point to a remote mail service.')
   if (parsed.NODE_ENV === 'production' && !parsed.MFA_ENCRYPTION_KEY) throw new Error('MFA_ENCRYPTION_KEY must be configured in production.')

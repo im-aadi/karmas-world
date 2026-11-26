@@ -37,7 +37,12 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   const app = express()
   const PgSessionStore = connectPgSimple(session)
   const cookieName = config.NODE_ENV === 'production' ? '__Host-kw_session' : 'kw.sid'
-  const allowedOrigins = new Set([config.WEB_ORIGIN])
+  const allowedOrigins = new Set([
+    config.WEB_ORIGIN,
+    ...(process.env.APP_URL ? [process.env.APP_URL] : []),
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
+  ])
   const isAllowedOrigin = (origin: string) => {
     if (allowedOrigins.has(origin)) return true
     if (config.NODE_ENV !== 'development') return false
@@ -59,7 +64,13 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
           styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", 'data:', 'https:'],
           fontSrc: ["'self'", 'data:'],
-          connectSrc: ["'self'", config.WEB_ORIGIN, ...(config.NODE_ENV === 'development' ? ['http://localhost:*', 'ws://localhost:*'] : [])],
+          connectSrc: [
+            "'self'",
+            config.WEB_ORIGIN,
+            ...(process.env.APP_URL ? [process.env.APP_URL] : []),
+            ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+            ...(config.NODE_ENV === 'development' ? ['http://localhost:*', 'ws://localhost:*'] : []),
+          ],
           frameAncestors: ["'none'"],
           objectSrc: ["'none'"],
           baseUri: ["'self'"],

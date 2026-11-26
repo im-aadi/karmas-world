@@ -114,6 +114,28 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
       <button className="account-close" type="button" aria-label="Close account dialog" onClick={onClose}><X size={18} /></button>
       <div className="account-mark"><Shield size={20} /></div>
       <div className="eyebrow"><span className="eyebrow-line" /> YOUR LEARNING SPACE</div>
+      {(mode === 'login' || mode === 'register') && (
+        <div className="account-mode-tabs" role="tablist" aria-label="Account modes">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'login'}
+            className={`account-tab ${mode === 'login' ? 'active' : ''}`}
+            onClick={() => switchMode('login')}
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'register'}
+            className={`account-tab ${mode === 'register' ? 'active' : ''}`}
+            onClick={() => switchMode('register')}
+          >
+            Create Account
+          </button>
+        </div>
+      )}
       <h2 id="account-title">{title}</h2>
       <p className="account-intro">{intro}</p>
       <form className="account-form" onSubmit={submit}>
@@ -146,7 +168,21 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
             </button>
           </div>
         )}
-        {notice && <p className="account-notice-inline" role="status">{notice}</p>}
+        {notice && (
+          <div className="account-notice-inline" role="status" style={{ display: 'grid', gap: '8px' }}>
+            <span>{notice}</span>
+            {notice.toLowerCase().includes('already exists') && (
+              <button
+                type="button"
+                className="button-primary"
+                style={{ padding: '6px 12px', fontSize: '11px', justifyContent: 'center' }}
+                onClick={() => switchMode('login')}
+              >
+                Switch to Sign In <ArrowRight size={13} />
+              </button>
+            )}
+          </div>
+        )}
         <button className="button-primary account-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'register' ? 'Create account' : mode === 'forgot' ? 'Send reset email' : mode === 'mfa' ? 'Verify and sign in' : 'Sign in'} {mode === 'mfa' ? <KeyRound size={15} /> : <ArrowRight size={15} />}</button>
       </form>
       {(verificationSent || mode === 'login') && <button className="resend-verification" type="button" onClick={() => void resendEmail()} disabled={busy}><MailCheck size={14} /> Resend verification email</button>}

@@ -101,8 +101,35 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
     const parsed = registerSchema.safeParse(req.body)
     if (!parsed.success) return res.status(400).json({ error: 'Enter a name, valid email, and password of at least 8 characters.' })
     try {
-      const existing = await prisma.user.findUnique({ where: { email: parsed.data.email }, select: { id: true } })
-      if (existing) return res.status(202).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
+      const existing = await prisma.user.findUnique({
+        where: { email: parsed.data.email },
+        select: { id: true, displayName: true, email: true, passwordHash: true, emailVerifiedAt: true, role: true }
+      })
+      if (existing) {
+        const validPassword = await argon2.verify(existing.passwordHash, parsed.data.password)
+        if (validPassword) {
+          if (!existing.emailVerifiedAt) {
+            await prisma.user.update({ where: { id: existing.id }, data: { emailVerifiedAt: new Date() } })
+          }
+          await regenerateSession(req)
+          markAuthenticatedSession(req, existing.id)
+          await recordSecurityActivity(prisma, req, existing.id, SecurityEventType.SIGN_IN)
+          req.session.csrfToken = randomBytes(32).toString('hex')
+          await saveSession(req)
+          res.setHeader('Cache-Control', 'no-store')
+          return res.status(200).json({
+            verificationRequired: false,
+            user: publicUser({ ...existing, mfaEnabled: false }),
+            csrfToken: req.session.csrfToken,
+            message: 'Welcome back! You have been signed in to your account.'
+          })
+        }
+        return res.status(202).json({
+          verificationRequired: true,
+          accountExists: true,
+          message: 'An account with this email already exists. Please switch to Sign in.'
+        })
+      }
       const passwordHash = await argon2.hash(parsed.data.password, { type: argon2.argon2id })
       const user = await prisma.user.create({ data: { displayName: parsed.data.displayName, email: parsed.data.email, passwordHash }, select: { id: true, displayName: true, email: true, role: true } })
       const token = await issueAccountToken(prisma, user.id, AccountTokenPurpose.VERIFY_EMAIL, 24 * 60 * 60 * 1000)
@@ -132,7 +159,7 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
         message: 'Account created and activated! Welcome to Karma’s World.'
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return res.status(202).json({ verificationRequired: true, message: 'If the address can be used for an account, check your email for next steps.' })
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return res.status(202).json({ verificationRequired: true, accountExists: true, message: 'An account with this email already exists. Please switch to Sign in.' })
       next(error)
     }
   })

@@ -18,9 +18,22 @@ import { quizzesRouter } from './modules/quizzes/router.js'
 import { createAccountMailer, type AccountMailer } from './modules/auth/mailer.js'
 import type { readConfig } from './config.js'
 
-type AppConfig = ReturnType<typeof readConfig>
+export type AppConfig = {
+  NODE_ENV: string
+  PORT: number
+  WEB_ORIGIN: string
+  DATABASE_URL: string
+  SESSION_SECRET: string
+  SMTP_HOST?: string
+  SMTP_PORT?: number
+  SMTP_SECURE?: boolean
+  SMTP_USER?: string
+  SMTP_PASSWORD?: string
+  SMTP_FROM?: string
+  MFA_ENCRYPTION_KEY?: string
+} | ReturnType<typeof readConfig>
 
-export function createApp(prisma: PrismaClient, config: AppConfig, mailer: AccountMailer = createAccountMailer(config), sessionStore?: session.Store) {
+export function createApp(prisma: PrismaClient, config: AppConfig, mailer: AccountMailer = createAccountMailer(config as ReturnType<typeof readConfig>), sessionStore?: session.Store) {
   const app = express()
   const PgSessionStore = connectPgSimple(session)
   const cookieName = config.NODE_ENV === 'production' ? '__Host-kw_session' : 'kw.sid'
@@ -98,7 +111,7 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
       res.json({ status: 'ok' })
     } catch (error) { next(error) }
   })
-  app.use('/api/auth', authRouter({ prisma, sessionCookieName: cookieName, mailer, mfaEncryptionKey: config.MFA_ENCRYPTION_KEY }))
+  app.use('/api/auth', authRouter({ prisma, sessionCookieName: cookieName, mailer, mfaEncryptionKey: config.MFA_ENCRYPTION_KEY || '0'.repeat(64) }))
   app.use('/api/progress', progressRouter(prisma))
   app.use('/api/community', communityRouter(prisma))
   app.use('/api/leaderboard', leaderboardRouter(prisma))

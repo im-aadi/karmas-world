@@ -581,10 +581,10 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
   return router
 }
 
-export const sessionCookieOptions = (config: { NODE_ENV: string }): SessionOptions['cookie'] => ({
+export const sessionCookieOptions = (config: { NODE_ENV: string; [key: string]: unknown }) => ({
   httpOnly: true,
   secure: config.NODE_ENV === 'production',
-  sameSite: 'lax',
+  sameSite: 'lax' as const,
   path: '/',
   maxAge: 8 * 60 * 60 * 1000,
 })

@@ -67,9 +67,9 @@ describe('account lifecycle routes', () => {
     expect(response.body).toMatchObject({ verificationRequired: true })
     expect(response.body.user).toBeUndefined()
     expect(mailer.sendVerification).toHaveBeenCalledOnce()
-    const rawToken = vi.mocked(mailer.sendVerification).mock.calls[0][2]
+    const rawToken = vi.mocked(mailer.sendVerification).mock.calls[0]![2]!
     expect(createToken).toHaveBeenCalledWith({ data: expect.objectContaining({ purpose: 'VERIFY_EMAIL', tokenHash: hashToken(rawToken) }) })
-    expect(createToken.mock.calls[0][0].data.tokenHash).not.toBe(rawToken)
+    expect(createToken.mock.calls[0]![0]!.data.tokenHash).not.toBe(rawToken)
   })
 
   it('uses the same password-reset response when the email does not belong to an account', async () => {
@@ -201,7 +201,7 @@ describe('account lifecycle routes', () => {
     expect(enabled.body).toMatchObject({ enabled: true })
     expect(enabled.body.recoveryCodes).toHaveLength(10)
     expect(createRecoveryCodes).toHaveBeenCalledWith({ data: expect.arrayContaining([expect.objectContaining({ userId: user.id, codeHash: expect.stringMatching(/^[a-f0-9]{64}$/) })]) })
-    expect(JSON.stringify(createRecoveryCodes.mock.calls[0][0])).not.toContain(enabled.body.recoveryCodes[0])
+    expect(JSON.stringify(createRecoveryCodes.mock.calls[0]![0])).not.toContain(enabled.body.recoveryCodes[0])
     expect(enableUser).toHaveBeenCalledOnce()
   })
 
@@ -313,7 +313,7 @@ describe('account lifecycle routes', () => {
     expect(deleteRecoveryCode).toHaveBeenNthCalledWith(2, { where: { userId: user.id, codeHash: oldRecoveryCodeHash } })
     expect(deleteRecoveryCode).toHaveBeenNthCalledWith(3, { where: { userId: user.id } })
     expect(createRecoveryCodes).toHaveBeenCalledWith({ data: expect.arrayContaining([expect.objectContaining({ userId: user.id, codeHash: expect.stringMatching(/^[a-f0-9]{64}$/) })]) })
-    expect(JSON.stringify(createRecoveryCodes.mock.calls[0][0])).not.toContain(response.body.recoveryCodes[0])
+    expect(JSON.stringify(createRecoveryCodes.mock.calls[0]![0])).not.toContain(response.body.recoveryCodes[0])
   })
 
   it('keeps the current address until the new address confirms its one-time link', async () => {
@@ -353,7 +353,7 @@ describe('account lifecycle routes', () => {
     expect(requested.body.message).toMatch(/current email remains active/i)
     expect(updatedUser).not.toHaveBeenCalled()
     expect(mailer.sendEmailChangeVerification).toHaveBeenCalledWith(newEmail, user.displayName, expect.any(String))
-    const rawToken = vi.mocked(mailer.sendEmailChangeVerification).mock.calls[0][2]
+    const rawToken = vi.mocked(mailer.sendEmailChangeVerification).mock.calls[0]![2]!
     expect(createToken).toHaveBeenCalledWith({ data: expect.objectContaining({ purpose: 'CHANGE_EMAIL', targetEmail: newEmail, tokenHash: hashToken(rawToken), expiresAt: expect.any(Date) }) })
     vi.mocked(prisma.accountToken.findUnique).mockResolvedValue({ ...tokenRecord, tokenHash: hashToken(rawToken) })
 

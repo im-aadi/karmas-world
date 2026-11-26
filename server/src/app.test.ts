@@ -6,7 +6,7 @@ import { createApp } from './app.js'
 import { sessionCookieOptions } from './modules/auth/router.js'
 
 const config = {
-  NODE_ENV: 'test',
+  NODE_ENV: 'test' as const,
   PORT: 4000,
   WEB_ORIGIN: 'http://localhost:5173',
   DATABASE_URL: 'postgresql://local:local@127.0.0.1:5432/unused',

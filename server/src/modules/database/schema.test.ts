@@ -28,15 +28,6 @@ describe('Database Models & Authentication Security (Phase 3)', () => {
   it('enforces secure session cookie flags in development and production', () => {
     const devOptions = sessionCookieOptions({
       NODE_ENV: 'development',
-      PORT: 4000,
-      WEB_ORIGIN: 'http://localhost:5173',
-      DATABASE_URL: 'postgresql://test',
-      SESSION_SECRET: 'test-secret',
-      SMTP_HOST: 'localhost',
-      SMTP_PORT: 1025,
-      SMTP_SECURE: false,
-      SMTP_FROM: 'test@example.com',
-      MFA_ENCRYPTION_KEY: '0'.repeat(64),
     })
 
     expect(devOptions.httpOnly).toBe(true)
@@ -44,15 +35,6 @@ describe('Database Models & Authentication Security (Phase 3)', () => {
 
     const prodOptions = sessionCookieOptions({
       NODE_ENV: 'production',
-      PORT: 4000,
-      WEB_ORIGIN: 'https://karmas.world',
-      DATABASE_URL: 'postgresql://prod',
-      SESSION_SECRET: 'test-secret',
-      SMTP_HOST: 'smtp.example.com',
-      SMTP_PORT: 587,
-      SMTP_SECURE: true,
-      SMTP_FROM: 'no-reply@karmas.world',
-      MFA_ENCRYPTION_KEY: 'a'.repeat(64),
     })
 
     expect(prodOptions.httpOnly).toBe(true)

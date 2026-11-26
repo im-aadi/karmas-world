@@ -6,7 +6,7 @@ import { createApp } from '../../app.js'
 import { stripHtml, sanitizeUserInput, isSafeIdentifier } from './sanitization.js'
 
 const testConfig = {
-  NODE_ENV: 'test',
+  NODE_ENV: 'test' as const,
   PORT: 4000,
   WEB_ORIGIN: 'http://localhost:5173',
   DATABASE_URL: 'postgresql://local:local@127.0.0.1:5432/unused',

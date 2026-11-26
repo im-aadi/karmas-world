@@ -3,9 +3,10 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "prisma generate && tsc -p tsconfig.json",
+    "build": "prisma generate && tsc -p tsconfig.json && node -e \"import('node:fs').then(fs => fs.writeFileSync('dist/package.json', JSON.stringify({type:'module',main:'index.js'}, null, 2)))\"",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",

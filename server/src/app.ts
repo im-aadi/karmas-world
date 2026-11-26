@@ -4,7 +4,7 @@ import helmet from 'helmet'
 import session from 'express-session'
 import connectPgSimple from 'connect-pg-simple'
 import { rateLimit } from 'express-rate-limit'
-import type { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { authRouter, sessionCookieOptions } from './modules/auth/router.js'
 import { progressRouter } from './modules/progress/router.js'
 import { communityRouter } from './modules/community/router.js'
@@ -16,7 +16,7 @@ import { labsRouter } from './modules/labs/router.js'
 import { gamificationRouter } from './modules/gamification/router.js'
 import { quizzesRouter } from './modules/quizzes/router.js'
 import { createAccountMailer, type AccountMailer } from './modules/auth/mailer.js'
-import type { readConfig } from './config.js'
+import { readConfig } from './config.js'
 
 export type AppConfig = {
   NODE_ENV: string
@@ -106,10 +106,27 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
     message: { error: 'Too many requests from this client. Please slow down.' },
   })
   app.use('/api', apiLimiter)
+  let resolvedStore = sessionStore
+  if (!resolvedStore) {
+    if (process.env.VERCEL && (!config.DATABASE_URL || config.DATABASE_URL.includes('localhost') || config.DATABASE_URL.includes('127.0.0.1') || config.DATABASE_URL.includes('fallback'))) {
+      resolvedStore = new session.MemoryStore()
+    } else {
+      try {
+        const pgStore = new PgSessionStore({ conString: config.DATABASE_URL, createTableIfMissing: false, tableName: 'user_sessions' })
+        pgStore.on('error', (err: { message?: string }) => {
+          console.warn('[Session] Session store warning:', err?.message || err)
+        })
+        resolvedStore = pgStore
+      } catch {
+        resolvedStore = new session.MemoryStore()
+      }
+    }
+  }
+
   app.use(session({
     name: cookieName,
     secret: config.SESSION_SECRET,
-    store: sessionStore ?? new PgSessionStore({ conString: config.DATABASE_URL, createTableIfMissing: false, tableName: 'user_sessions' }),
+    store: resolvedStore,
     resave: false,
     saveUninitialized: false,
     rolling: true,
@@ -133,10 +150,29 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   app.use('/api/gamification', gamificationRouter(prisma))
   app.use('/api/quizzes', quizzesRouter(prisma))
   app.use('/api', (_req, res) => res.status(404).json({ error: 'API route not found.' }))
-  app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    console.error('API request failed', error instanceof Error ? error.message : 'Unknown error')
+  app.use((error: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+    console.error('API request failed', errorMsg)
     if (res.headersSent) return
+    if (req.path !== '/api/health' && error instanceof Error && (errorMsg.includes("Can't reach database server") || errorMsg.includes('ECONNREFUSED') || errorMsg.includes('PrismaClientInitializationError'))) {
+      res.status(503).json({ error: 'The database server is currently offline or unreachable. Please try Local Learner mode or connect a cloud database.' })
+      return
+    }
     res.status(500).json({ error: 'The request could not be completed.' })
   })
   return app
+}
+
+let defaultAppInstance: express.Express | null = null
+export function getDefaultApp(): express.Express {
+  if (!defaultAppInstance) {
+    const config = readConfig()
+    const prisma = new PrismaClient()
+    defaultAppInstance = createApp(prisma, config)
+  }
+  return defaultAppInstance
+}
+
+export default function handler(req: express.Request, res: express.Response) {
+  return getDefaultApp()(req, res)
 }

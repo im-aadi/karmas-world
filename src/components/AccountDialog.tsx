@@ -129,7 +129,7 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
               onClick={() => {
                 const localUser: LearnerAccount = {
                   id: 'local-' + Date.now(),
-                  displayName: displayName.trim() || 'Learner',
+                  displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || 'Learner',
                   email: email.trim() || 'learner@local',
                   role: 'LEARNER',
                 }
@@ -150,6 +150,24 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
         : mode === 'forgot' || mode === 'mfa'
           ? <button type="button" onClick={() => switchMode('login')}>Back to sign in</button>
           : <><button type="button" onClick={() => switchMode('forgot')}>Forgot password?</button><span>New to Karma’s World?</span><button type="button" onClick={() => switchMode('register')}>Create a free account</button></>}
+      </div>
+      <div style={{ textAlign: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <button
+          type="button"
+          style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: '11px', textDecoration: 'underline', cursor: 'pointer' }}
+          onClick={() => {
+            const localUser: LearnerAccount = {
+              id: 'local-' + Date.now(),
+              displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || 'Learner',
+              email: email.trim() || 'learner@local',
+              role: 'LEARNER',
+            }
+            void onAuthenticated(localUser, 'local-offline-csrf')
+            onClose()
+          }}
+        >
+          No database connected? Continue in Local Learner Mode
+        </button>
       </div>
       <p className="account-privacy">Your password is stored as a secure hash. Verification and reset links expire and can only be used once.</p>
     </section>

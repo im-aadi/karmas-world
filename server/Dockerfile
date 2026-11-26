@@ -24,9 +24,9 @@ RUN pnpm --filter @karmas-world/api db:generate
 COPY packages/shared/ ./packages/shared/
 RUN pnpm shared:build
 
-# Copy backend source code and tsconfig
+# Copy backend source code, build script, and tsconfig
 COPY server/src/ ./server/src/
-COPY server/tsconfig.json ./server/
+COPY server/build.js server/tsconfig.json ./server/
 
 # Build backend JavaScript files to server/dist
 RUN pnpm --filter @karmas-world/api build

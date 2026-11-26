@@ -21,7 +21,7 @@ COPY packages/shared/ ./packages/shared/
 RUN pnpm shared:build
 
 # Copy frontend source files
-COPY index.html vite.config.ts tsconfig.json tsconfig.app.json tsconfig.node.json ./
+COPY index.html vite.config.ts tsconfig.json ./
 COPY src/ ./src/
 
 # Compile TypeScript and build production bundle into /app/dist

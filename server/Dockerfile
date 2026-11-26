@@ -52,7 +52,7 @@ COPY packages/shared/package.json ./packages/shared/
 COPY server/package.json ./server/
 COPY server/prisma/ ./server/prisma/
 
-RUN pnpm install --prod --frozen-lockfile && pnpm --filter @karmas-world/api db:generate
+RUN pnpm install --prod --frozen-lockfile
 
 # Copy compiled files from builder
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist

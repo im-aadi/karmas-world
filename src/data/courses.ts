@@ -1,3 +1,5 @@
+import { catalogCourses } from './catalog'
+
 export type Lesson = {
   title: string
   duration: string
@@ -46,3 +48,56 @@ export const courses: Course[] = [
     ],
   },
 ]
+
+export function getAllCourses(): Course[] {
+  const builtInIds = new Set(courses.map(c => c.id))
+  const adapted: Course[] = catalogCourses
+    .filter(cat => !builtInIds.has(cat.academyCourseId || '') && !builtInIds.has(cat.id))
+    .map(cat => {
+      const lessons: Lesson[] = []
+      cat.modules.forEach((mod, modIdx) => {
+        mod.lessons.forEach((lesTitle, lesIdx) => {
+          const objective = cat.learningObjectives[(modIdx * 2 + lesIdx) % cat.learningObjectives.length] || cat.description
+          lessons.push({
+            title: lesTitle,
+            duration: '6 min',
+            body: [
+              `Welcome to "${lesTitle}", part of ${cat.title} under Module ${modIdx + 1}: ${mod.title}.`,
+              `Core Security Objective: ${objective}. Practicing this principle helps you build robust defensive and analytical capabilities.`,
+              `Real-World Application: In real-world environments, understanding ${lesTitle.toLowerCase()} ensures defenders can identify threat vectors and deploy proportionate mitigations.`
+            ],
+            takeaway: `${objective} is fundamental to master in ${cat.title}.`,
+            question: `Which approach best reflects the security principle of ${lesTitle}?`,
+            options: [
+              `Focus on ${objective.toLowerCase().slice(0, 50)}...`,
+              'Bypass access controls and validation layers',
+              'Disable logging and alerting mechanisms'
+            ],
+            answer: 0,
+            explanation: `${lesTitle} emphasizes: ${objective}.`
+          })
+        })
+      })
+
+      return {
+        id: cat.id,
+        title: cat.title,
+        level: cat.difficulty,
+        description: cat.description,
+        lessons: lessons.length > 0 ? lessons : [
+          {
+            title: 'Foundations & Objectives',
+            duration: '5 min',
+            body: [cat.description],
+            takeaway: cat.learningObjectives[0] || 'Understand the core security principle.',
+            question: `What is the main topic covered in ${cat.title}?`,
+            options: [cat.learningObjectives[0] || cat.title, 'Unrelated office management', 'None of the above'],
+            answer: 0,
+            explanation: `This course explores ${cat.title}.`
+          }
+        ]
+      }
+    })
+
+  return [...courses, ...adapted]
+}

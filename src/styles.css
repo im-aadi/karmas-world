@@ -5379,4 +5379,179 @@
   }
 }
 
+/* ==========================================================================
+   Smooth Page Transitions & Interactive Course Animations
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+@keyframes lessonPageTurn {
+  0% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.985);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translateX(-3px) scale(1.002);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes courseEnterScale {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInSmooth {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes academyPulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(184, 242, 126, 0.45);
+    border-color: rgba(184, 242, 126, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 45px 12px rgba(184, 242, 126, 0.22);
+    border-color: var(--mint);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(184, 242, 126, 0);
+    border-color: #202c37;
+  }
+}
+
+@keyframes nextBtnPulse {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes noticeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-lesson-slide {
+  animation: lessonPageTurn 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-course-enter {
+  animation: courseEnterScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeInSmooth 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.account-notice {
+  animation: noticeSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.academy-section.academy-highlight-pulse .course-view,
+.academy-section.academy-highlight-pulse {
+  animation: academyPulseGlow 2.5s ease-out;
+}
+
+.next-lesson:hover svg,
+.card-start-btn:hover svg {
+  animation: nextBtnPulse 0.8s ease-in-out infinite;
+}
+
+.prev-lesson {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #2f3d47;
+  border-radius: 4px;
+  background: #121c25;
+  color: #b8c4cb;
+  padding: 10px 14px;
+  font: 11px Manrope, sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prev-lesson:hover {
+  background: #182430;
+  border-color: #435563;
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+.next-lesson {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(184, 242, 126, 0.3);
+  border-radius: 4px;
+  background: rgba(184, 242, 126, 0.08);
+  color: var(--mint);
+  padding: 10px 16px;
+  font: 11px Manrope, sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.next-lesson:hover {
+  background: rgba(184, 242, 126, 0.18);
+  border-color: var(--mint);
+  color: #ffffff;
+  transform: translateX(3px);
+  box-shadow: 0 4px 16px rgba(184, 242, 126, 0.25);
+}
+
+.next-lesson:active {
+  transform: scale(0.97) translateX(2px);
+}
+
+.catalog-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.catalog-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184, 242, 126, 0.35);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(184, 242, 126, 0.06);
+}
+
+.course-modal-backdrop {
+  animation: fadeInSmooth 0.25s ease-out both;
+}
+
+.course-modal-panel {
+  animation: courseEnterScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 

@@ -126,13 +126,16 @@ function App() {
   }
 
   function handleStartCatalogCourse(course: CatalogCourse) {
-    if (course.academyCourseId) {
-      setLessonRequest({ courseId: course.academyCourseId, lessonIndex: 0 })
-      document.getElementById('academy')?.scrollIntoView?.({ behavior: 'smooth' })
-    } else {
-      document.getElementById('academy')?.scrollIntoView?.({ behavior: 'smooth' })
-      setAccountNotice(`Enrolled in "${course.title}". Start with foundational lessons below!`)
+    const targetCourseId = course.academyCourseId || course.id
+    setLessonRequest({ courseId: targetCourseId, lessonIndex: 0 })
+    const academyElem = document.getElementById('academy')
+    if (academyElem) {
+      academyElem.classList.remove('academy-highlight-pulse')
+      void academyElem.offsetWidth
+      academyElem.classList.add('academy-highlight-pulse')
+      academyElem.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
+    setAccountNotice(`🚀 Interactive Course Active: "${course.title}" — Starting with Lesson 01 below!`)
   }
 
   return <div id="home" className="site-shell">

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, BookOpen, Check, CircleCheck, Clock3, LockKeyhole } from 'lucide-react'
-import { courses, type Course } from '../data/courses'
+import { courses, getAllCourses, type Course } from '../data/courses'
 import { readLearningProgress, saveLearningProgress, type LearningProgress } from '../data/progress'
 import { syncCompletedLesson } from '../data/account'
 
@@ -14,7 +14,8 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
   const [choice, setChoice] = useState<number | null>(null)
   const [checked, setChecked] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
-  const course = useMemo(() => courses.find(item => item.id === courseId), [courseId])
+  const allCourses = useMemo(() => getAllCourses(), [])
+  const course = useMemo(() => allCourses.find(item => item.id === courseId), [allCourses, courseId])
   const completed = course ? progress[course.id] ?? [] : []
 
   useEffect(() => {
@@ -25,14 +26,14 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
 
   useEffect(() => {
     if (!lessonRequest) return
-    const requestedCourse = courses.find(item => item.id === lessonRequest.courseId)
+    const requestedCourse = allCourses.find(item => item.id === lessonRequest.courseId)
     if (!requestedCourse || !requestedCourse.lessons[lessonRequest.lessonIndex]) return
     setCourseId(requestedCourse.id)
     setLessonIndex(lessonRequest.lessonIndex)
     setChoice(null)
     setChecked(false)
     document.getElementById('academy')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
-  }, [lessonRequest])
+  }, [lessonRequest, allCourses])
 
   function openCourse(item: Course) {
     setCourseId(item.id)
@@ -79,7 +80,7 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
         <div><div className="eyebrow"><span className="eyebrow-line" /> PHASE 02 / THE LEARNING ACADEMY</div><h2>Knowledge, with<br /><span>a clear next step.</span></h2></div>
         <p>Short, guided lessons give you the foundations first, then let you check what you learned. Your progress stays on this device.</p>
       </div>
-      {course ? <div className="course-view">
+      {course ? <div key={course.id} className="course-view animate-course-enter">
         <button className="back-to-courses" onClick={closeCourse}><ArrowLeft size={15} /> All learning paths</button>
         <div className="course-layout">
           <aside className="lesson-sidebar" aria-label={`${course.title} lessons`}>
@@ -88,7 +89,7 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
             </div>
             <ol>{course.lessons.map((lesson, index) => <li key={lesson.title}><button className={lessonIndex === index ? 'lesson-nav active' : 'lesson-nav'} onClick={() => selectLesson(index)} aria-current={lessonIndex === index ? 'step' : undefined}><span className="lesson-status">{completed.includes(index) ? <CircleCheck size={17} /> : String(index + 1).padStart(2, '0')}</span><span>{lesson.title}<small><Clock3 size={12} /> {lesson.duration}</small></span>{completed.includes(index) && <Check size={14} className="lesson-done-icon" />}</button></li>)}</ol>
           </aside>
-          <article className="lesson-content">
+          <article key={`${course.id}-${lessonIndex}`} className="lesson-content animate-lesson-slide">
             <div className="lesson-meta"><span>{course.level}</span><span>LESSON {String(lessonIndex + 1).padStart(2, '0')} / {String(course.lessons.length).padStart(2, '0')}</span></div>
             <h3>{course.lessons[lessonIndex].title}</h3>
             {course.lessons[lessonIndex].body.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
@@ -99,12 +100,15 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
                 <button className="check-answer" disabled={choice === null} onClick={() => setChecked(true)}>{checked && choice === course.lessons[lessonIndex].answer ? 'Answer checked' : 'Check answer'} <ArrowRight size={14} /></button>
               </div>
             </div>
-            <div className="lesson-actions">{completed.includes(lessonIndex) ? <span className="completed-label"><CircleCheck size={16} /> Lesson complete</span> : <button className="button-primary" disabled={!checked || choice !== course.lessons[lessonIndex].answer} onClick={completeLesson}>Mark lesson complete <Check size={15} /></button>}
-              {lessonIndex < course.lessons.length - 1 ? <button className="next-lesson" onClick={moveNext}>Next lesson <ArrowRight size={15} /></button> : <span className="course-end"><LockKeyhole size={14} /> {completed.length === course.lessons.length ? 'Path completed' : 'Finish this lesson to complete the path'}</span>}</div>
+            <div className="lesson-actions">
+              {lessonIndex > 0 && <button type="button" className="prev-lesson" onClick={() => selectLesson(lessonIndex - 1)}><ArrowLeft size={14} /> Previous</button>}
+              {completed.includes(lessonIndex) ? <span className="completed-label"><CircleCheck size={16} /> Lesson complete</span> : <button className="button-primary" disabled={!checked || choice !== course.lessons[lessonIndex].answer} onClick={completeLesson}>Mark lesson complete <Check size={15} /></button>}
+              {lessonIndex < course.lessons.length - 1 ? <button className="next-lesson" onClick={moveNext}>Next lesson <ArrowRight size={15} /></button> : <span className="course-end"><LockKeyhole size={14} /> {completed.length === course.lessons.length ? 'Path completed' : 'Finish this lesson to complete the path'}</span>}
+            </div>
             {syncMessage && <p className="progress-sync-note" role="status">{syncMessage}</p>}
           </article>
         </div>
-      </div> : <div className="academy-grid">{courses.map(item => {
+      </div> : <div className="academy-grid animate-fade-in">{courses.map(item => {
         const done = progress[item.id]?.length ?? 0
         return <article className="academy-card" key={item.id}>
           <div className="academy-card-top"><span className="path-number">{item.level}</span><span className="academy-icon"><BookOpen size={18} /></span></div>

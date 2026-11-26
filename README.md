@@ -147,19 +147,20 @@ Run all test suites and builds locally before committing:
 # Build shared package
 pnpm shared:build
 
-# Run frontend & shared tests (17 test files, 39 tests)
+# Run frontend & shared tests (29 test files, 105 tests)
 pnpm test
 
 # Build frontend production bundle
 pnpm build
 
-# Run backend API tests
+# Run backend API tests (18 test files, 117 tests)
 pnpm api:test
 
 # Build backend API
 pnpm api:build
 
-# Or build all workspaces in one command
+# Run all tests (47 suites, 222 tests) and build all workspaces
+pnpm test:all
 pnpm build:all
 ```
 

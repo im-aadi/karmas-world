@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Globe2, LockKeyhole, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Globe2, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
 import { Header } from './components/Header'
 import { AccountDialog } from './components/AccountDialog'
 import { AccountSettingsDialog } from './components/AccountSettingsDialog'
 import { AccountActionDialog } from './components/AccountActionDialog'
+import { CyberBackgroundCanvas } from './components/CyberBackgroundCanvas'
+import { CyberHeroObject } from './components/CyberHeroObject'
 import { getCsrfToken, getCurrentAccount, logout, syncLearningProgress, type LearnerAccount } from './data/account'
 import { clearAccountLearningProgress, setProgressAccountId } from './data/progress'
 import { clearPrivateReflections } from './data/reflections'
@@ -164,6 +166,7 @@ function App() {
   }
 
   return <div id="home" className="site-shell">
+    <CyberBackgroundCanvas />
     <div className="announcement"><span className="live-dot" /> YOUR NEXT CHAPTER STARTS HERE <span className="announcement-sep">/</span> 100% FREE, ALWAYS <ArrowUpRight size={13} /></div>
     <Header account={account} currentView={currentView} onLogin={() => setAccountMode('login')} onRegister={() => setAccountMode('register')} onLogout={() => void handleLogout()} onSettings={() => setAccountSettingsOpen(true)} />
     {accountNotice && <div className="account-notice" role="status">{accountNotice}</div>}
@@ -193,11 +196,7 @@ function App() {
               <div className="hero-note"><span className="note-icon"><Check size={13} /></span> No experience needed <span className="note-dot">·</span> No paywall. Ever.</div>
             </div>
             <div className="hero-art" aria-label="Illustration of a digital security shield" role="img">
-              <div className="art-grid" /><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" />
-              <div className="orbit-label label-a"><span /> SYSTEMS / SECURE</div><div className="orbit-label label-b">01 — 03 <span>PATHWAYS</span></div>
-              <div className="shield-glow"><div className="shield-shape"><ShieldCheck size={96} strokeWidth={1.15} /></div></div>
-              <div className="floating-chip chip-top"><span className="chip-pulse" /> LEARNING MODE <b>ON</b></div><div className="floating-chip chip-bottom"><span className="chip-square"><LockKeyhole size={14} /></span> YOUR SPACE TO PRACTICE</div>
-              <div className="art-cross cross-one">+</div><div className="art-cross cross-two">+</div>
+              <CyberHeroObject />
             </div>
             <div className="hero-index"><span>01</span><i /> ACADEMY / OPEN ACCESS</div>
           </section>
@@ -207,7 +206,7 @@ function App() {
             <a className="all-paths" href="#academy">Explore the academy <ArrowRight size={16} /></a>
           </div></section>
           <section id="practice" className="practice-section wrap"><div className="practice-copy"><div className="eyebrow"><span className="eyebrow-line" /> LEARNING THAT STICKS</div><h2>Read a little.<br /><span>Try a lot.</span></h2><p>Cybersecurity makes more sense when you can explore it. Follow guided lessons, check your understanding, and build confidence in safe simulations.</p><a className="text-link" href="#paths">Find your first lesson <ArrowRight size={15} /></a></div>
-            <div className="practice-panel"><div className="panel-header"><span><span className="live-dot" /> PRACTICE SPACE</span><span>SIMULATION / 001</span></div><div className="terminal-content"><div className="terminal-glyph"><TerminalSquare size={31} /></div><p className="terminal-prompt">$ learn --by-doing</p><div className="terminal-rule" /><div className="terminal-row"><span><Radio /> Guided simulations</span><Check /></div><div className="terminal-row"><span><ShieldCheck /> Safe, controlled practice</span><Check /></div><div className="terminal-row"><span><BookOpen /> Lessons for every level</span><Check /></div></div><div className="panel-foot">A GOOD PLACE TO ASK “WHAT IF?” <span>↗</span></div></div>
+            <div className="practice-panel"><div className="panel-header"><span><span className="live-dot" /> PRACTICE SPACE</span><span>SIMULATION / 001</span></div><div className="terminal-content"><div className="terminal-glyph"><TerminalSquare size={31} /></div><p className="terminal-prompt">$ learn --by-doing<span className="terminal-cursor">_</span></p><div className="terminal-rule" /><div className="terminal-row"><span><Radio /> Guided simulations</span><Check /></div><div className="terminal-row"><span><ShieldCheck /> Safe, controlled practice</span><Check /></div><div className="terminal-row"><span><BookOpen /> Lessons for every level</span><Check /></div></div><div className="panel-foot">A GOOD PLACE TO ASK “WHAT IF?” <span>↗</span></div></div>
           </section>
         </>
       )}

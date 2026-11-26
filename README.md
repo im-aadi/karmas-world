@@ -172,18 +172,18 @@ pnpm build:all
 
 ```mermaid
 flowchart TD
-    subgraph Public Internet
+    subgraph PublicInternet["Public Internet"]
         Learner["Learners & Security Researchers (HTTPS:443 / HTTP:80)"]
     end
 
-    subgraph Docker Network [karma-network (Bridge)]
-        subgraph Web Tier [Nginx 1.27 Alpine]
+    subgraph DockerNetwork["Docker Network: karma-network (Bridge)"]
+        subgraph WebTier["Web Tier (Nginx 1.27 Alpine)"]
             Nginx["Nginx Reverse Proxy & Static Host"]
             SPA["Static SPA Bundle (/usr/share/nginx/html)"]
             Compression["Gzip / Brotli Compression & 1-Year Cache"]
         end
 
-        subgraph Application Tier [Node.js 22 Alpine API]
+        subgraph ApplicationTier["Application Tier (Node.js 22 Alpine API)"]
             API["Express 5 REST API (:4000)"]
             SecMiddle["Helmet (CSP, HSTS, nosniff, DENY)"]
             RateLimit["Global & Endpoint Rate Limiters"]
@@ -191,23 +191,23 @@ flowchart TD
             Argon2["Argon2id & AES-256-GCM Crypto"]
         end
 
-        subgraph Database Tier [PostgreSQL 17 Alpine]
-            Postgres[("PostgreSQL Database (:5432)")]
+        subgraph DatabaseTier["Database Tier (PostgreSQL 17 Alpine)"]
+            Postgres[("PostgreSQL Database: 5432")]
             Volume[("Persistent Storage: karma_postgres_prod")]
         end
 
-        subgraph External Services
+        subgraph ExternalServices["External Services"]
             SMTP["Remote SMTP Mail Service (SendGrid / Mailgun)"]
         end
     end
 
-    Learner -->|HTTP / HTTPS| Nginx
-    Nginx -->|Static Assets| SPA
-    Nginx -->|/api/* Reverse Proxy| API
+    Learner -->|"HTTP / HTTPS"| Nginx
+    Nginx -->|"Static Assets"| SPA
+    Nginx -->|"/api/* Reverse Proxy"| API
     API --> SecMiddle --> RateLimit --> CSRF --> Argon2
-    API -->|Prisma Parameterized Queries| Postgres
+    API -->|"Prisma Parameterized Queries"| Postgres
     Postgres --> Volume
-    API -->|Account Verification & Alerts| SMTP
+    API -->|"Account Verification & Alerts"| SMTP
 ```
 
 ### 7.2 Production Quickstart with Docker Compose

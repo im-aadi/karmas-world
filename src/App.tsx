@@ -76,8 +76,12 @@ function App() {
     setAccount(user)
     setCsrfToken(token)
     setAccountNotice('')
-    await syncLearningProgress(token)
-    setAccountNotice('Your learning progress is synced.')
+    try {
+      await syncLearningProgress(token)
+      setAccountNotice('Your learning progress is synced.')
+    } catch {
+      setAccountNotice(`Welcome, ${user.displayName}! Active in Local Learner mode (progress saved in this browser).`)
+    }
   }
 
   async function handleLogout() {

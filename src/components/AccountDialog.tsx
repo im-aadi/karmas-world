@@ -40,7 +40,7 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
           setNotice(result.message)
         } catch (regErr) {
           const msg = regErr instanceof Error ? regErr.message : String(regErr)
-          if (msg.includes('backend') || msg.includes('unavailable') || msg.includes('Failed to fetch') || msg.includes('not running')) {
+          if (msg.includes('backend') || msg.includes('unavailable') || msg.includes('Failed to fetch') || msg.includes('not running') || msg.includes('offline') || msg.includes('unreachable') || msg.includes('database')) {
             setOfflineAvailable(true)
           }
           throw regErr
@@ -62,7 +62,11 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
         }
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not complete that account request.')
+      const msg = cause instanceof Error ? cause.message : 'Could not complete that account request.'
+      if (msg.includes('backend') || msg.includes('unavailable') || msg.includes('Failed to fetch') || msg.includes('not running') || msg.includes('offline') || msg.includes('unreachable') || msg.includes('database')) {
+        setOfflineAvailable(true)
+      }
+      setError(msg)
     } finally {
       setBusy(false)
     }
@@ -114,14 +118,14 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
         {mode === 'mfa' && <label>Authenticator or recovery code<input required autoFocus autoComplete="one-time-code" inputMode="text" maxLength={32} value={mfaCode} onChange={event => setMfaCode(event.target.value)} /></label>}
         {error && <p className="account-error" role="alert">{error}</p>}
         {offlineAvailable && (
-          <div className="offline-fallback-box" style={{ margin: '4px 0 10px', padding: '12px', background: 'rgba(184, 242, 126, 0.08)', borderRadius: '6px', border: '1px solid rgba(184, 242, 126, 0.25)' }}>
-            <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#d0ffa9', lineHeight: 1.5 }}>
-              The backend API server is offline. You can continue instantly in <strong>Local Learner Mode</strong> to save your progress in this browser.
+          <div className="offline-fallback-box" style={{ margin: '8px 0 12px', padding: '12px', background: 'rgba(184, 242, 126, 0.08)', borderRadius: '6px', border: '1px solid rgba(184, 242, 126, 0.25)' }}>
+            <p style={{ margin: '0 0 8px 0', fontSize: '12px', color: '#d0ffa9', lineHeight: 1.5 }}>
+              Database is currently offline. You can continue instantly in <strong>Local Learner Mode</strong> to save all your progress in this browser.
             </p>
             <button
               type="button"
               className="button-primary"
-              style={{ width: '100%', fontSize: '11px', padding: '8px 12px', justifyContent: 'center' }}
+              style={{ width: '100%', fontSize: '12px', padding: '8px 12px', justifyContent: 'center' }}
               onClick={() => {
                 const localUser: LearnerAccount = {
                   id: 'local-' + Date.now(),

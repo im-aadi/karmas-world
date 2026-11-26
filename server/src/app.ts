@@ -154,7 +154,7 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
     const errorMsg = error instanceof Error ? error.message : 'Unknown error'
     console.error('API request failed', errorMsg)
     if (res.headersSent) return
-    if (req.path !== '/api/health' && error instanceof Error && (errorMsg.includes("Can't reach database server") || errorMsg.includes('ECONNREFUSED') || errorMsg.includes('PrismaClientInitializationError'))) {
+    if (req.path !== '/api/health' && error instanceof Error && (errorMsg.includes("Can't reach database server") || errorMsg.includes('ECONNREFUSED') || errorMsg.includes('PrismaClientInitializationError') || errorMsg.includes('Environment variable not found: DATABASE_URL') || errorMsg.includes('database connectivity') || errorMsg.includes('Connection terminated unexpectedly'))) {
       res.status(503).json({ error: 'The database server is currently offline or unreachable. Please try Local Learner mode or connect a cloud database.' })
       return
     }

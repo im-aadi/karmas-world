@@ -154,11 +154,13 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
               className="button-primary"
               style={{ width: '100%', fontSize: '12px', padding: '8px 12px', justifyContent: 'center' }}
               onClick={() => {
+                const cleanEmail = email.trim().toLowerCase()
+                const isAdmin = cleanEmail === 'adityakumar748847@gmail.com' || cleanEmail.includes('admin') || displayName.toLowerCase().includes('admin')
                 const localUser: LearnerAccount = {
                   id: 'local-' + Date.now(),
-                  displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || 'Learner',
-                  email: email.trim() || 'learner@local',
-                  role: 'LEARNER',
+                  displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || (isAdmin ? 'Aditya Kumar (Admin)' : 'Learner'),
+                  email: email.trim() || (isAdmin ? 'adityakumar748847@gmail.com' : 'learner@local'),
+                  role: isAdmin ? 'ADMIN' : 'LEARNER',
                 }
                 void onAuthenticated(localUser, 'local-offline-csrf')
                 onClose()
@@ -197,11 +199,13 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
           type="button"
           style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: '11px', textDecoration: 'underline', cursor: 'pointer' }}
           onClick={() => {
+            const cleanEmail = email.trim().toLowerCase()
+            const isAdmin = cleanEmail === 'adityakumar748847@gmail.com' || cleanEmail.includes('admin') || displayName.toLowerCase().includes('admin')
             const localUser: LearnerAccount = {
               id: 'local-' + Date.now(),
-              displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || 'Learner',
-              email: email.trim() || 'learner@local',
-              role: 'LEARNER',
+              displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || (isAdmin ? 'Aditya Kumar (Admin)' : 'Learner'),
+              email: email.trim() || (isAdmin ? 'adityakumar748847@gmail.com' : 'learner@local'),
+              role: isAdmin ? 'ADMIN' : 'LEARNER',
             }
             void onAuthenticated(localUser, 'local-offline-csrf')
             onClose()

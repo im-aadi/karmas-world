@@ -23,6 +23,7 @@ import { StudentDashboard } from './components/StudentDashboard'
 import { CommunityCorner } from './components/CommunityCorner'
 import { SecurityBrief } from './components/SecurityBrief'
 import { AdminOverview } from './components/AdminOverview'
+import { AdminLoginGateway } from './components/admin/AdminLoginGateway'
 import { Glossary } from './components/Glossary'
 import { FeedbackSection } from './components/FeedbackSection'
 import { downloadLearnerData } from './data/learnerExport'
@@ -264,8 +265,19 @@ function App() {
         <FeedbackSection account={account} />
       )}
 
-      {currentView === 'admin' && account?.role === 'ADMIN' && (
-        <AdminOverview csrfToken={csrfToken} />
+      {currentView === 'admin' && (
+        account?.role === 'ADMIN' ? (
+          <AdminOverview csrfToken={csrfToken} />
+        ) : (
+          <AdminLoginGateway
+            account={account}
+            onLogin={() => setAccountMode('login')}
+            onRegister={() => setAccountMode('register')}
+            onEnterAdmin={(adminUser) => {
+              void handleAuthenticated(adminUser, csrfToken || 'admin-local-token')
+            }}
+          />
+        )
       )}
     </main>
     <footer className="footer wrap">

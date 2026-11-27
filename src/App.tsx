@@ -175,7 +175,7 @@ function App() {
     {accountAction && <AccountActionDialog action={accountAction} onClose={() => setAccountAction(null)} onSignIn={handleAccountActionSignIn} onPasswordReset={handlePasswordResetComplete} onEmailChange={handleEmailChangeComplete} />}
     <main>
       {currentView !== 'home' && (
-        <div className="view-breadcrumb wrap" style={{ padding: '24px 0 10px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#929eaa' }}>
+        <div className="view-breadcrumb wrap" style={{ padding: '20px 0 10px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#929eaa', flexWrap: 'wrap' }}>
           <a href="#home" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--mint)', fontWeight: 600 }}>
             ← Home
           </a>

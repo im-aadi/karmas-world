@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, BookOpen, Check, CircleCheck, Clock3, LockKeyhole } from 'lucide-react'
-import { courses, getAllCourses, type Course } from '../data/courses'
+import { getAllCourses, type Course } from '../data/courses'
 import { readLearningProgress, saveLearningProgress, type LearningProgress } from '../data/progress'
 import { syncCompletedLesson } from '../data/account'
 
@@ -14,7 +14,18 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
   const [choice, setChoice] = useState<number | null>(null)
   const [checked, setChecked] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
+  const [selectedLevel, setSelectedLevel] = useState<'ALL' | 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'>('ALL')
   const allCourses = useMemo(() => getAllCourses(), [])
+  const displayedCourses = useMemo(() => {
+    return allCourses.filter(item => {
+      if (selectedLevel === 'ALL') return true
+      const lvl = item.level.toUpperCase()
+      if (selectedLevel === 'BEGINNER') return lvl.includes('BEGINNER')
+      if (selectedLevel === 'INTERMEDIATE') return lvl.includes('INTERMEDIATE')
+      if (selectedLevel === 'ADVANCED') return lvl.includes('ADVANCED') || lvl.includes('EXPERT')
+      return true
+    })
+  }, [allCourses, selectedLevel])
   const course = useMemo(() => allCourses.find(item => item.id === courseId), [allCourses, courseId])
   const completed = course ? progress[course.id] ?? [] : []
 
@@ -77,9 +88,23 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
   return <section id="academy" className="academy-section">
     <div className="wrap">
       <div className="academy-heading">
-        <div><div className="eyebrow"><span className="eyebrow-line" /> PHASE 02 / THE LEARNING ACADEMY</div><h2>Knowledge, with<br /><span>a clear next step.</span></h2></div>
-        <p>Short, guided lessons give you the foundations first, then let you check what you learned. Your progress stays on this device.</p>
+        <div><div className="eyebrow"><span className="eyebrow-line" /> THE LEARNING ACADEMY</div><h2>Curated Cybersecurity Paths.<br /><span>From Beginner to Expert.</span></h2></div>
+        <p>Short, guided lessons give you the core concepts, realistic terminal and code examples, and knowledge checks to master defensive and offensive cybersecurity.</p>
       </div>
+      {!course && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', margin: '20px 0 26px' }}>
+          {(['ALL', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const).map(lvl => (
+            <button
+              key={lvl}
+              type="button"
+              className={selectedLevel === lvl ? 'filter-pill active' : 'filter-pill'}
+              onClick={() => setSelectedLevel(lvl)}
+            >
+              {lvl === 'ALL' ? `All Levels (${allCourses.length} Courses)` : lvl === 'ADVANCED' ? 'Advanced & Expert' : lvl.charAt(0) + lvl.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+      )}
       {course ? <div key={course.id} className="course-view animate-course-enter">
         <button className="back-to-courses" onClick={closeCourse}><ArrowLeft size={15} /> All learning paths</button>
         <div className="course-layout">
@@ -108,7 +133,7 @@ export function LearningAcademy({ accountId = null, csrfToken = '', lessonReques
             {syncMessage && <p className="progress-sync-note" role="status">{syncMessage}</p>}
           </article>
         </div>
-      </div> : <div className="academy-grid animate-fade-in">{courses.map(item => {
+      </div> : <div className="academy-grid animate-fade-in">{displayedCourses.map(item => {
         const done = progress[item.id]?.length ?? 0
         return <article className="academy-card" key={item.id}>
           <div className="academy-card-top"><span className="path-number">{item.level}</span><span className="academy-icon"><BookOpen size={18} /></span></div>

@@ -157,7 +157,7 @@ function App() {
   }, [])
 
   function handleStartCatalogCourse(course: CatalogCourse) {
-    const targetCourseId = course.academyCourseId || course.id
+    const targetCourseId = course.id
     setLessonRequest({ courseId: targetCourseId, lessonIndex: 0 })
     setCurrentView('academy')
     window.location.hash = '#academy'

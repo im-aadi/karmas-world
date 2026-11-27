@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, Globe2, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, ExternalLink, Github, Globe2, Linkedin, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
 import { Header } from './components/Header'
 import { AccountDialog } from './components/AccountDialog'
 import { AccountSettingsDialog } from './components/AccountSettingsDialog'
@@ -263,7 +263,56 @@ function App() {
         <AdminOverview csrfToken={csrfToken} />
       )}
     </main>
-    <footer className="footer wrap"><a className="brand" href="#home"><span className="brand-mark"><Shield size={16} /></span><span>KARMA'S<span className="brand-light">WORLD</span></span></a><p>Learn. Explore. Defend.</p><span>© 2026 KARMA'S WORLD · MADE FOR THE CURIOUS</span></footer>
+    <footer className="footer wrap">
+      <div className="footer-main">
+        <div className="footer-brand-col">
+          <a className="brand" href="#home">
+            <span className="brand-mark"><Shield size={18} strokeWidth={2.4} /></span>
+            <span>KARMA'S<span className="brand-light">WORLD</span></span>
+          </a>
+          <p className="footer-tagline">
+            An open, interactive cybersecurity academy. Master defensive operations, networking, cryptography, ethical hacking, and digital forensics from beginner to expert.
+          </p>
+        </div>
+
+        <div className="footer-creator-card">
+          <div className="creator-label">DEVELOPED & MAINTAINED BY</div>
+          <div className="creator-name">Aditya Kumar</div>
+          <div className="creator-social-links">
+            <a
+              href="https://github.com/im-aadi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-badge-link"
+              aria-label="Aditya Kumar GitHub Profile"
+            >
+              <Github size={14} />
+              <span>GitHub (@im-aadi)</span>
+              <ExternalLink size={12} className="ext-icon" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/aditya-kumar-250131263/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-badge-link linkedin"
+              aria-label="Aditya Kumar LinkedIn Profile"
+            >
+              <Linkedin size={14} />
+              <span>LinkedIn (Aditya Kumar)</span>
+              <ExternalLink size={12} className="ext-icon" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <span>© 2026 KARMA'S WORLD · OPEN CYBERSECURITY ECOSYSTEM</span>
+        <div className="footer-meta-tags">
+          <span className="footer-pill">PHASE 21 / 2026</span>
+          <span className="footer-pill mint">ACTIVE REPO</span>
+        </div>
+      </div>
+    </footer>
   </div>
 }
 

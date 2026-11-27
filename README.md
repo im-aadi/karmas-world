@@ -281,7 +281,15 @@ Because Karma's World is a cybersecurity education platform, we enforce defense-
 
 ---
 
-## 9. License
+## 9. Author & Creator
+
+- **Author:** Aditya Kumar
+- **GitHub:** [@im-aadi](https://github.com/im-aadi)
+- **LinkedIn:** [Aditya Kumar](https://www.linkedin.com/in/aditya-kumar-250131263/)
+
+---
+
+## 10. License
 
 This project is licensed under the [MIT License](LICENSE).  
-Copyright (c) 2026 Aditya Kashyap.
+Copyright (c) 2026 Aditya Kumar (im-aadi).

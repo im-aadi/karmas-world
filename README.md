@@ -281,11 +281,18 @@ Because Karma's World is a cybersecurity education platform, we enforce defense-
 
 ---
 
-## 9. Author & Creator
+## 9. Author, Contact & Feedback
 
-- **Author:** Aditya Kumar
+- **Author & Maintainer:** Aditya Kumar
+- **Email:** [adityakumar748847@gmail.com](mailto:adityakumar748847@gmail.com)
 - **GitHub:** [@im-aadi](https://github.com/im-aadi)
 - **LinkedIn:** [Aditya Kumar](https://www.linkedin.com/in/aditya-kumar-250131263/)
+
+### Community Feedback & Bug Bounty
+Learners can report bugs, request features, or propose new cybersecurity exercises through:
+1. **Interactive In-App Portal:** Navigate to `#feedback` on the web application.
+2. **Direct Email:** [adityakumar748847@gmail.com](mailto:adityakumar748847@gmail.com)
+3. **GitHub Issues:** Submit an issue on [GitHub](https://github.com/im-aadi/karmas-world/issues).
 
 ---
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, ExternalLink, Github, Globe2, Linkedin, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, Check, ExternalLink, Github, Globe2, Linkedin, Mail, MessageSquare, Radio, Shield, ShieldCheck, Sparkles, TerminalSquare } from 'lucide-react'
 import { Header } from './components/Header'
 import { AccountDialog } from './components/AccountDialog'
 import { AccountSettingsDialog } from './components/AccountSettingsDialog'
@@ -24,6 +24,7 @@ import { CommunityCorner } from './components/CommunityCorner'
 import { SecurityBrief } from './components/SecurityBrief'
 import { AdminOverview } from './components/AdminOverview'
 import { Glossary } from './components/Glossary'
+import { FeedbackSection } from './components/FeedbackSection'
 import { downloadLearnerData } from './data/learnerExport'
 
 function parseHash(hash: string): string {
@@ -259,6 +260,10 @@ function App() {
         <CommunityCorner accountId={account?.id ?? null} role={account?.role ?? null} csrfToken={csrfToken} onSignIn={() => setAccountMode('login')} />
       )}
 
+      {currentView === 'feedback' && (
+        <FeedbackSection account={account} />
+      )}
+
       {currentView === 'admin' && account?.role === 'ADMIN' && (
         <AdminOverview csrfToken={csrfToken} />
       )}
@@ -280,6 +285,14 @@ function App() {
           <div className="creator-name">Aditya Kumar</div>
           <div className="creator-social-links">
             <a
+              href="mailto:adityakumar748847@gmail.com?subject=[Karma's%20World%20Inquiry]"
+              className="social-badge-link mail"
+              aria-label="Email Aditya Kumar"
+            >
+              <Mail size={14} />
+              <span>adityakumar748847@gmail.com</span>
+            </a>
+            <a
               href="https://github.com/im-aadi"
               target="_blank"
               rel="noopener noreferrer"
@@ -300,6 +313,14 @@ function App() {
               <Linkedin size={14} />
               <span>LinkedIn (Aditya Kumar)</span>
               <ExternalLink size={12} className="ext-icon" />
+            </a>
+            <a
+              href="#feedback"
+              className="social-badge-link feedback-badge"
+              aria-label="Give Feedback & Feature Requests"
+            >
+              <MessageSquare size={14} />
+              <span>Give Feedback</span>
             </a>
           </div>
         </div>

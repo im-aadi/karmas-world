@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpRight, Github, Linkedin, Menu, Shield, X } from 'lucide-react'
+import { ArrowUpRight, Github, Linkedin, Mail, Menu, Shield, X } from 'lucide-react'
 import type { LearnerAccount } from '../data/account'
 
 const links = [
@@ -15,6 +15,7 @@ const links = [
   ['Practice', '#practice', 'practice'],
   ['Updates', '#updates', 'updates'],
   ['Community', '#community', 'community'],
+  ['Feedback', '#feedback', 'feedback'],
 ]
 
 type Props = {
@@ -44,6 +45,13 @@ export function Header({ account, currentView = 'home', onLogin, onRegister, onL
       ))}
       <div className="mobile-creator-links">
         <a
+          href="mailto:adityakumar748847@gmail.com"
+          className="mobile-creator-link"
+          aria-label="Email Aditya Kumar"
+        >
+          <Mail size={15} /> adityakumar748847@gmail.com
+        </a>
+        <a
           href="https://github.com/im-aadi"
           target="_blank"
           rel="noopener noreferrer"
@@ -68,7 +76,15 @@ export function Header({ account, currentView = 'home', onLogin, onRegister, onL
       {!account && <button className="mobile-nav-action" onClick={() => { setOpen(false); onRegister() }}>Create account</button>}
     </nav>
     <div className="nav-actions">
-      <div className="nav-social-links" aria-label="Creator Profiles">
+      <div className="nav-social-links" aria-label="Creator Profiles & Contact">
+        <a
+          href="mailto:adityakumar748847@gmail.com?subject=[Karma's%20World]"
+          className="header-social-btn"
+          title="Email Aditya Kumar (adityakumar748847@gmail.com)"
+          aria-label="Email Aditya Kumar"
+        >
+          <Mail size={15} />
+        </a>
         <a
           href="https://github.com/im-aadi"
           target="_blank"

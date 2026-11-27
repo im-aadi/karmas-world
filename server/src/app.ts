@@ -149,6 +149,19 @@ export function createApp(prisma: PrismaClient, config: AppConfig, mailer: Accou
   app.use('/api', labsRouter(prisma))
   app.use('/api/gamification', gamificationRouter(prisma))
   app.use('/api/quizzes', quizzesRouter(prisma))
+  app.post('/api/feedback', (req, res) => {
+    const { message } = req.body ?? {}
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ error: 'Feedback message is required.' })
+    }
+    const ticketId = `KW-FB-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+    return res.json({
+      status: 'ok',
+      ticketId,
+      message: 'Feedback received. Thank you for helping build Karma\'s World!',
+      contactEmail: 'adityakumar748847@gmail.com'
+    })
+  })
   app.use('/api', (_req, res) => res.status(404).json({ error: 'API route not found.' }))
   app.use((error: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error'

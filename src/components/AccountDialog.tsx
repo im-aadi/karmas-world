@@ -155,7 +155,8 @@ export function AccountDialog({ initialMode, onClose, onAuthenticated }: Props) 
               style={{ width: '100%', fontSize: '12px', padding: '8px 12px', justifyContent: 'center' }}
               onClick={() => {
                 const cleanEmail = email.trim().toLowerCase()
-                const isAdmin = cleanEmail === 'adityakumar748847@gmail.com' || cleanEmail.includes('admin') || displayName.toLowerCase().includes('admin')
+                // Only the designated platform creator and owner is assigned the ADMIN role
+                const isAdmin = cleanEmail === 'adityakumar748847@gmail.com'
                 const localUser: LearnerAccount = {
                   id: 'local-' + Date.now(),
                   displayName: displayName.trim() || (email.includes('@') ? email.split('@')[0] : '') || (isAdmin ? 'Aditya Kumar (Admin)' : 'Learner'),

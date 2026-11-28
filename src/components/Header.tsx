@@ -156,8 +156,8 @@ export function Header({ account, currentView = 'home', onLogin, onRegister, onL
           <span>Feedback</span>
         </a>
 
-        {/* Admin Link/Badge */}
-        {isAdmin ? (
+        {/* Admin Link/Badge — Strictly for assigned authenticated Administrator */}
+        {isAdmin && (
           <a
             href="#admin"
             className={`nav-admin-badge ${currentView === 'admin' ? 'active' : ''}`}
@@ -166,19 +166,6 @@ export function Header({ account, currentView = 'home', onLogin, onRegister, onL
               setDropdownOpen(false)
             }}
             title="Admin Management Console"
-          >
-            <ShieldAlert size={13} />
-            <span>Admin</span>
-          </a>
-        ) : (
-          <a
-            href="#admin"
-            className={`nav-admin-link ${currentView === 'admin' ? 'active' : ''}`}
-            onClick={() => {
-              setOpen(false)
-              setDropdownOpen(false)
-            }}
-            title="Admin Login Gateway"
           >
             <ShieldAlert size={13} />
             <span>Admin</span>
@@ -204,14 +191,16 @@ export function Header({ account, currentView = 'home', onLogin, onRegister, onL
                 </a>
               )
             })}
-            <a
-              href="#admin"
-              className={`mobile-explore-link ${currentView === 'admin' ? 'active' : ''}`}
-              onClick={() => setOpen(false)}
-            >
-              <ShieldAlert size={15} />
-              <span>Admin Gateway</span>
-            </a>
+            {isAdmin && (
+              <a
+                href="#admin"
+                className={`mobile-explore-link ${currentView === 'admin' ? 'active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                <ShieldAlert size={15} />
+                <span>Admin Console</span>
+              </a>
+            )}
           </div>
         </div>
 

@@ -129,3 +129,27 @@ export async function submitUserFeedback(payload: {
 
   return newFeedback
 }
+
+export function updateFeedbackStatus(id: string, newStatus: UserFeedback['status']): UserFeedback[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const list = getSavedFeedbacks()
+    const updated = list.map(item => item.id === id ? { ...item, status: newStatus } : item)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    return updated
+  } catch {
+    return []
+  }
+}
+
+export function deleteFeedbackTicket(id: string): UserFeedback[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const list = getSavedFeedbacks()
+    const updated = list.filter(item => item.id !== id)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    return updated
+  } catch {
+    return []
+  }
+}

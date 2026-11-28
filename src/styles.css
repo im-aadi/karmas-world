@@ -296,6 +296,9 @@
 .spin-slow {
   animation: spinRadar 8s linear infinite;
 }
+.spin-icon {
+  animation: spinRadar 1s linear infinite;
+}
 
 .hero-index {
   position: absolute;

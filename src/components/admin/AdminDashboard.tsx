@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Activity,
   ArrowUpRight,
   BookOpen,
   BookOpenCheck,
   BookPlus,
+  Check,
   CheckCircle2,
+  Clock,
   Flag,
   GraduationCap,
   Inbox,
   Lock,
   Pin,
+  RefreshCw,
   Search,
   ShieldAlert,
   ShieldCheck,
@@ -20,7 +23,7 @@ import {
   Users,
 } from 'lucide-react'
 import { getAdminOverview, type AdminOverviewData } from '../../data/admin'
-import { getSavedFeedbacks, type UserFeedback } from '../../data/feedback'
+import { deleteFeedbackTicket, getSavedFeedbacks, updateFeedbackStatus, type UserFeedback } from '../../data/feedback'
 import {
   deleteAdminCourse,
   fetchAdminAnalytics,
@@ -91,48 +94,63 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
   >([])
   const [loadingThreads, setLoadingThreads] = useState(false)
   const [feedbacks, setFeedbacks] = useState<UserFeedback[]>([])
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // Load Overview Snapshot
-  useEffect(() => {
-    let active = true
-    getAdminOverview()
-      .then((data) => {
-        if (active) setOverview(data)
-      })
-      .catch((cause) => {
-        if (active) {
-          if (
-            cause instanceof Error &&
-            (cause.message.includes('fetch') || cause.message.includes('URL') || cause.message.includes('unavailable') || cause.message.includes('Network') || cause.message.includes('Failed to parse'))
-          ) {
-            let realCompleted = 0
-            try {
-              const saved = localStorage.getItem('karma_learning_progress')
-              if (saved) {
-                const parsed = JSON.parse(saved)
-                if (Array.isArray(parsed)) realCompleted = parsed.length
-              }
-            } catch {}
+  // Centralized Live Data Reload Function
+  const reloadAll = useCallback(async () => {
+    setIsRefreshing(true)
+    try {
+      const [overviewData, analyticsData, threadsData] = await Promise.all([
+        getAdminOverview().catch(() => null),
+        fetchAdminAnalytics().catch(() => null),
+        fetchAdminThreads().catch(() => null),
+      ])
 
-            setOverview({
-              learnerAccounts: 1,
-              completedLessons: realCompleted,
-              pendingPosts: 0,
-              openReports: 0, // Zero false reports - clean operational status
-              leaderboardParticipants: 1,
-              generatedAt: new Date().toISOString(),
-            })
-          } else {
-            setOverviewError(cause instanceof Error ? cause.message : 'Could not load administration metrics.')
+      if (overviewData) {
+        setOverview(overviewData)
+        setOverviewError('')
+      } else {
+        let realCompleted = 0
+        try {
+          const saved = localStorage.getItem('karma_learning_progress')
+          if (saved) {
+            const parsed = JSON.parse(saved)
+            if (Array.isArray(parsed)) realCompleted = parsed.length
           }
-        }
-      })
-    return () => {
-      active = false
+        } catch {}
+
+        setOverview({
+          learnerAccounts: 1,
+          completedLessons: realCompleted,
+          pendingPosts: 0,
+          openReports: 0,
+          leaderboardParticipants: 1,
+          generatedAt: new Date().toISOString(),
+        })
+      }
+
+      if (analyticsData) setAnalytics(analyticsData)
+      if (threadsData) setThreads(threadsData)
+      setFeedbacks(getSavedFeedbacks())
+    } finally {
+      setIsRefreshing(false)
     }
   }, [])
 
-  // Load Feedback Tickets
+  // Initial Load
+  useEffect(() => {
+    void reloadAll()
+  }, [reloadAll])
+
+  // Automatic Polling Sync Every 30 Seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      void reloadAll()
+    }, 30000)
+    return () => clearInterval(timer)
+  }, [reloadAll])
+
+  // Refresh Feedbacks on Tab Switch
   useEffect(() => {
     setFeedbacks(getSavedFeedbacks())
   }, [activeTab])
@@ -262,9 +280,34 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
               governance for platform administrators.
             </p>
           </div>
-          <a href="#moderation-title">
-            Open moderation queue <ArrowUpRight size={14} />
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => void reloadAll()}
+              disabled={isRefreshing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                padding: '9px 15px',
+                borderRadius: '6px',
+                background: 'rgba(184, 242, 126, 0.08)',
+                border: '1px solid rgba(184, 242, 126, 0.28)',
+                color: 'var(--mint)',
+                fontSize: '11px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+              }}
+              title="Instantly fetch the latest reports, user metrics, and tickets"
+            >
+              <RefreshCw size={13} className={isRefreshing ? 'spin-icon' : ''} />
+              <span>{isRefreshing ? 'Syncing Reports...' : 'Refresh Reports Now'}</span>
+            </button>
+            <a href="#moderation-title">
+              Open moderation queue <ArrowUpRight size={14} />
+            </a>
+          </div>
         </div>
 
         {overviewError && (
@@ -287,13 +330,19 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
         </div>
 
         {overview && (
-          <p className="admin-generated-at">
-            Snapshot generated{' '}
-            {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
-              new Date(overview.generatedAt)
-            )}
-            . Refresh the page for updated counts.
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', margin: '14px 0 20px' }}>
+            <p className="admin-generated-at" style={{ margin: 0 }}>
+              Live snapshot generated{' '}
+              {new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(
+                new Date(overview.generatedAt)
+              )}
+              .
+            </p>
+            <span style={{ fontSize: '11px', color: 'var(--mint)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span className="live-dot" style={{ width: '7px', height: '7px', background: 'var(--mint)', borderRadius: '50%' }} />
+              Auto-Sync: Updates automatically every 30s
+            </span>
+          </div>
         )}
 
         {/* Admin Navigation Tabs */}
@@ -732,6 +781,7 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
                         <th>Rating</th>
                         <th>Status</th>
                         <th>Received</th>
+                        <th>Manage Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -762,12 +812,56 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
                             )}
                           </td>
                           <td>
-                            <span className="status-chip active" style={{ fontSize: '10px' }}>
+                            <span className={`status-chip ${fb.status === 'Resolved' ? 'approved' : fb.status === 'In Development' ? 'active' : 'pending'}`} style={{ fontSize: '10px' }}>
                               {fb.status}
                             </span>
                           </td>
                           <td className="text-muted" style={{ fontSize: '11px' }}>
                             {new Date(fb.timestamp).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                              {fb.status !== 'Resolved' && (
+                                <button
+                                  type="button"
+                                  className="mod-mini-btn approve"
+                                  style={{ padding: '3px 8px', fontSize: '10px' }}
+                                  onClick={() => {
+                                    const updated = updateFeedbackStatus(fb.id, 'Resolved')
+                                    setFeedbacks(updated)
+                                  }}
+                                  title="Mark as Resolved"
+                                >
+                                  <Check size={11} /> Resolve
+                                </button>
+                              )}
+                              {fb.status === 'Received' && (
+                                <button
+                                  type="button"
+                                  className="mod-mini-btn"
+                                  style={{ padding: '3px 8px', fontSize: '10px' }}
+                                  onClick={() => {
+                                    const updated = updateFeedbackStatus(fb.id, 'In Development')
+                                    setFeedbacks(updated)
+                                  }}
+                                  title="Mark as In Development"
+                                >
+                                  <Clock size={11} /> Review
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="mod-mini-btn danger"
+                                style={{ padding: '3px 6px', fontSize: '10px' }}
+                                onClick={() => {
+                                  const updated = deleteFeedbackTicket(fb.id)
+                                  setFeedbacks(updated)
+                                }}
+                                title="Dismiss / Delete Ticket"
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

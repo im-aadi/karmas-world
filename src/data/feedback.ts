@@ -30,7 +30,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'course',
     description: 'Expanded from 3 initial courses to 20 structured domains (120+ lessons) spanning ethical hacking, Linux, cryptography, SOC, and forensics.',
     status: 'Completed',
-    votes: 142
+    votes: 0
   },
   {
     id: 'rd-02',
@@ -38,7 +38,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'improvement',
     description: 'Fixed layout cutoff, sidebar overflow, and horizontal navigation blowouts for smartphone and tablet learners.',
     status: 'Completed',
-    votes: 98
+    votes: 0
   },
   {
     id: 'rd-03',
@@ -46,7 +46,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'feature',
     description: 'Direct channel for learners to report bugs, suggest courses, and contact the creator directly.',
     status: 'Completed',
-    votes: 85
+    votes: 0
   },
   {
     id: 'rd-04',
@@ -54,7 +54,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'feature',
     description: 'In-browser packet analysis and port scanner simulator with simulated PCAP inspection.',
     status: 'In Progress',
-    votes: 119
+    votes: 0
   },
   {
     id: 'rd-05',
@@ -62,7 +62,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'course',
     description: 'Interactive x86/x64 decompilation viewer with step-by-step register state visualization.',
     status: 'In Progress',
-    votes: 76
+    votes: 0
   },
   {
     id: 'rd-06',
@@ -70,7 +70,7 @@ export const defaultRoadmapItems: RoadmapItem[] = [
     category: 'feature',
     description: 'Timed team-based defensive hardening and offensive intrusion scenarios with live scoreboards.',
     status: 'Planned',
-    votes: 210
+    votes: 0
   }
 ]
 

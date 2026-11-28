@@ -5,25 +5,18 @@ import {
   BookOpen,
   BookOpenCheck,
   BookPlus,
-  Check,
   CheckCircle2,
-  Clock,
-  Flag,
   GraduationCap,
-  Inbox,
   Lock,
   Pin,
   RefreshCw,
   Search,
   ShieldAlert,
-  ShieldCheck,
-  Star,
   Trash2,
   UserCheck,
   Users,
 } from 'lucide-react'
 import { getAdminOverview, type AdminOverviewData } from '../../data/admin'
-import { deleteFeedbackTicket, getSavedFeedbacks, updateFeedbackStatus, type UserFeedback } from '../../data/feedback'
 import {
   deleteAdminCourse,
   fetchAdminAnalytics,
@@ -43,7 +36,6 @@ const SNAPSHOT_METRICS = [
   { key: 'learnerAccounts', label: 'LEARNER ACCOUNTS', icon: Users },
   { key: 'completedLessons', label: 'LESSONS COMPLETED', icon: BookOpenCheck },
   { key: 'pendingPosts', label: 'POSTS TO REVIEW', icon: GraduationCap },
-  { key: 'openReports', label: 'OPEN REPORTS', icon: Flag },
   { key: 'leaderboardParticipants', label: 'OPTED-IN LEARNERS', icon: Activity },
 ] as const
 
@@ -93,7 +85,6 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
     }>
   >([])
   const [loadingThreads, setLoadingThreads] = useState(false)
-  const [feedbacks, setFeedbacks] = useState<UserFeedback[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Centralized Live Data Reload Function
@@ -131,7 +122,6 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
 
       if (analyticsData) setAnalytics(analyticsData)
       if (threadsData) setThreads(threadsData)
-      setFeedbacks(getSavedFeedbacks())
     } finally {
       setIsRefreshing(false)
     }
@@ -149,11 +139,6 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
     }, 30000)
     return () => clearInterval(timer)
   }, [reloadAll])
-
-  // Refresh Feedbacks on Tab Switch
-  useEffect(() => {
-    setFeedbacks(getSavedFeedbacks())
-  }, [activeTab])
 
   // Load Analytics
   useEffect(() => {
@@ -417,13 +402,7 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
                     <div className="telemetry-card">
                       <span className="kpi-label">FORUM DISCUSSIONS</span>
                       <strong className="kpi-val">{analytics.totalForumThreads}</strong>
-                      <span className="kpi-sub">
-                        {analytics.openReports === 0 ? (
-                          <span style={{ color: 'var(--mint)' }}>0 open reports &bull; All Clean</span>
-                        ) : (
-                          `${analytics.openReports} open reports`
-                        )}
-                      </span>
+                      <span className="kpi-sub">Community discussions</span>
                     </div>
                   </div>
 
@@ -731,136 +710,6 @@ export function AdminDashboard({ csrfToken }: AdminDashboardProps) {
                                   Approve
                                 </button>
                               )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-
-            {/* Platform Integrity & Abuse Reports */}
-            <div className="admin-panel-box" style={{ marginBottom: '32px' }}>
-              <div className="panel-box-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3>Platform Integrity & Abuse Reports</h3>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--mint)', background: 'rgba(184, 242, 126, 0.1)', padding: '4px 10px', borderRadius: '4px', border: '1px solid rgba(184, 242, 126, 0.3)' }}>
-                  <ShieldCheck size={14} /> 0 Open Abuse Reports &bull; All Clear
-                </span>
-              </div>
-              <p style={{ margin: '0 0 16px', fontSize: '12px', color: '#91a2b0', lineHeight: '1.7' }}>
-                Active safety monitor for spam, harmful payloads, or code of conduct violations across discussions and visualizer submissions. All current channels report 0 violations.
-              </p>
-            </div>
-
-            {/* Learner Feedback & Bug Reports Inbox */}
-            <div className="admin-panel-box" style={{ marginBottom: '32px' }}>
-              <div className="panel-box-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Inbox size={18} color="var(--mint)" />
-                  <h3>Learner Feedback & Ticket Inbox ({feedbacks.length})</h3>
-                </div>
-                <a href="#feedback" style={{ fontSize: '11px', color: 'var(--mint)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  Open Feedback Portal <ArrowUpRight size={13} />
-                </a>
-              </div>
-              {feedbacks.length === 0 ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#7a8c99', fontSize: '12px', background: '#0b121a', borderRadius: '6px', border: '1px solid #1f2c38' }}>
-                  No open user issues. When learners submit bugs, feature ideas, or course requests via <code>#feedback</code>, tickets will appear here for your review.
-                </div>
-              ) : (
-                <div className="admin-table-wrapper">
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Ticket ID</th>
-                        <th>Category</th>
-                        <th>Subject / Issue</th>
-                        <th>Submitted By</th>
-                        <th>Rating</th>
-                        <th>Status</th>
-                        <th>Received</th>
-                        <th>Manage Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {feedbacks.map((fb) => (
-                        <tr key={fb.id}>
-                          <td><code>{fb.id}</code></td>
-                          <td>
-                            <span className="status-chip approved" style={{ textTransform: 'capitalize' }}>
-                              {fb.category}
-                            </span>
-                          </td>
-                          <td className="font-semibold" style={{ maxWidth: '280px' }}>
-                            <div>{fb.title}</div>
-                            <small style={{ color: '#8898a5', fontWeight: 400, display: 'block', marginTop: '2px' }}>
-                              {fb.message.length > 90 ? fb.message.slice(0, 90) + '...' : fb.message}
-                            </small>
-                          </td>
-                          <td className="text-muted">
-                            {fb.name || 'Anonymous'}{fb.email ? ` (${fb.email})` : ''}
-                          </td>
-                          <td>
-                            {fb.rating ? (
-                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: '#ffd54f', fontSize: '11px' }}>
-                                <Star size={11} fill="#ffd54f" /> {fb.rating}/5
-                              </span>
-                            ) : (
-                              <span style={{ color: '#687784', fontSize: '11px' }}>—</span>
-                            )}
-                          </td>
-                          <td>
-                            <span className={`status-chip ${fb.status === 'Resolved' ? 'approved' : fb.status === 'In Development' ? 'active' : 'pending'}`} style={{ fontSize: '10px' }}>
-                              {fb.status}
-                            </span>
-                          </td>
-                          <td className="text-muted" style={{ fontSize: '11px' }}>
-                            {new Date(fb.timestamp).toLocaleDateString()}
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                              {fb.status !== 'Resolved' && (
-                                <button
-                                  type="button"
-                                  className="mod-mini-btn approve"
-                                  style={{ padding: '3px 8px', fontSize: '10px' }}
-                                  onClick={() => {
-                                    const updated = updateFeedbackStatus(fb.id, 'Resolved')
-                                    setFeedbacks(updated)
-                                  }}
-                                  title="Mark as Resolved"
-                                >
-                                  <Check size={11} /> Resolve
-                                </button>
-                              )}
-                              {fb.status === 'Received' && (
-                                <button
-                                  type="button"
-                                  className="mod-mini-btn"
-                                  style={{ padding: '3px 8px', fontSize: '10px' }}
-                                  onClick={() => {
-                                    const updated = updateFeedbackStatus(fb.id, 'In Development')
-                                    setFeedbacks(updated)
-                                  }}
-                                  title="Mark as In Development"
-                                >
-                                  <Clock size={11} /> Review
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                className="mod-mini-btn danger"
-                                style={{ padding: '3px 6px', fontSize: '10px' }}
-                                onClick={() => {
-                                  const updated = deleteFeedbackTicket(fb.id)
-                                  setFeedbacks(updated)
-                                }}
-                                title="Dismiss / Delete Ticket"
-                              >
-                                <Trash2 size={11} />
-                              </button>
                             </div>
                           </td>
                         </tr>
